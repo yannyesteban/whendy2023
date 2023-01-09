@@ -1,0 +1,27 @@
+{
+    "paths": {
+        "@main/*": ["./*"]
+        
+    },
+    "compileOnSave": true,
+    "compilerOptions": {
+        "target": "es6",
+        "module": "es2020",
+        "sourceMap": true,
+        "outDir": "./front/js",
+        "moduleResolution": "classic",
+        "typeRoots": [],
+        "baseUrl": ".",
+        "paths": {
+            "ti": [
+                "./erase/tiza.js"
+            ]
+        }
+        //"outDir": "js",
+        //"rootDir": "./ts"
+    },
+    //"include":["ts/y2/*", "ts/*"]
+    "include": [
+        "front//ts//**//*"
+    ]
+}

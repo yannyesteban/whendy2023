@@ -1,0 +1,33 @@
+:root {
+  --main-bg-color: brown;
+  --grid-column: 3 ;
+}
+
+.grid {
+  border: 2px solid rgb(33, 246, 171);
+  display: inline-grid;
+  padding: 5px;
+  grid-template-columns: 50px 200px 50px 50px;
+  position: relative;
+  width: auto;
+  overflow: auto;
+  color: var(--main-bg-color);
+  -moz-column-gap: 5px;
+       column-gap: 5px;
+  row-gap: 5px;
+}
+.grid .header,
+.grid .footer,
+.grid .row {
+  display: contents;
+}
+.grid .row .cell {
+  border: 2px solid rgb(33, 246, 171);
+}
+.grid .row .cell:nth-child(4) {
+  position: absolute;
+  color: rgb(83, 34, 233);
+  background-color: aquamarine;
+  border: 1px solid rgb(7, 73, 50);
+  overflow: hidden;
+}/*# sourceMappingURL=grid2.css.map */
