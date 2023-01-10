@@ -1,0 +1,200 @@
+{
+    "name": "PhoneMenu",
+    "menu": {
+        "addClass":["phone-menu", "unit"],
+        "hideCheck": true,
+        "hideIcon": false,
+        "events": {
+            "link-action": "console.log('hola')"
+        },
+        "items": [
+            {
+                "caption": "Unids",
+                "addClass": "unit",
+                "title":"Unidades",
+                "request": {
+					"request": [
+						{
+							"id": "gt-unit-menu",
+                            "type": "element",
+							"appendTo": "wh-app",
+							"element": "gt-unit-menu",
+							"name": null,
+							"method": "init",
+							"config": {
+                                "modal": true
+                            }
+						}
+					]
+				},
+				"events": {
+					"link-action": "if(document.getElementById(this.request.request[0].id)){document.getElementById(this.request.request[0].id).show = true;}else{this.send = true;}"
+				}
+            },
+            {
+                "caption": "Sitios",
+                "addClass": "site",
+                "title":"Sitios",
+                "request": {
+					"request": [
+						{
+							"id": "gt-site",
+                            "type": "element",
+							"appendTo": "wh-app",
+							"element": "gt-site",
+							"name": null,
+							"method": "init",
+							"config": {
+                                "modal": true
+                            }
+						}
+					]
+				},
+				"events": {
+					"link-action": "if(document.getElementById(this.request.request[0].id)){document.getElementById(this.request.request[0].id).show = true;}else{this.send = true;}"
+				}
+            },
+            {
+                "caption": "Geo",
+                "addClass": "geofence",
+                "title":"Geocercas",
+                "request": {
+					"request": [
+						{
+							"id": "gt-geofence",
+                            "type": "element",
+							"appendTo": "wh-app",
+							"element": "gt-geofence",
+							"name": null,
+							"method": "init",
+							"config": {
+                                "modal": true
+                            }
+						}
+					]
+				},
+				"events": {
+					"link-action": "if(document.getElementById(this.request.request[0].id)){document.getElementById(this.request.request[0].id).show = true;}else{this.send = true;}"
+				}
+            },
+            {
+                "caption": "Alarm",
+                "addClass": "alarm",
+                "title":"Alarmas",
+                "request": {
+					"request": [
+						{
+							"id": "gt-alarm",
+                            "type": "element",
+							"appendTo": "wh-app",
+							"element": "gt-alarm",
+							"name": null,
+							"method": "init",
+							"config": {
+                                "modal": true
+                            }
+						}
+					]
+				},
+				"events": {
+					"link-action": "if(document.getElementById(this.request.request[0].id)){document.getElementById(this.request.request[0].id).show = true;}else{this.send = true;}"
+				}
+            },
+            {
+                "caption": "Inm",
+                "addClass": "bolt",
+                "title":"Inmediato",
+                "events": {
+                    "link-action": "console.log(this)"
+                }
+            },
+            {
+                "caption": "Adm",
+                "addClass": "event-admin",
+                "title":"Administrador de Eventos",
+                "request": {
+					"request": [
+						{
+							"id": "gt-event-query",
+                            "type": "element",
+							"appendTo": "wh-app",
+							"element": "gt-event-query",
+							"name": null,
+							"method": "init",
+							"config": {
+                                "modal": true
+                            }
+						}
+					]
+				},
+				"events": {
+					"link-action": "if(document.getElementById(this.request.request[0].id)){document.getElementById(this.request.request[0].id).show = true;}else{this.send = true;}"
+				}
+            },
+            {
+                "caption": "Búsq",
+                "addClass": "search",
+                "title":"Búsqueda",
+                "request": {
+					"request": [
+						{
+							"id": "gt-search",
+                            "type": "element",
+							"appendTo": "wh-app",
+							"element": "gt-search",
+							"name": null,
+							"method": "init",
+							"config": {
+                                "modal": true
+                            }
+						}
+					]
+				},
+				"events": {
+					"link-action": "if(document.getElementById(this.request.request[0].id)){document.getElementById(this.request.request[0].id).show = true;}else{this.send = true;}"
+				}
+            },
+
+            {
+                "caption": "Conf",
+                "addClass": "setting",
+                "title":"Configuración del Sistema",
+                "request": {
+					"request": [
+						{
+							"id": "gt-config",
+                            "type": "element",
+							"appendTo": "wh-app",
+							"element": "gt-config",
+							"name": null,
+							"method": "init",
+							"config": {
+                                "modal": true
+                            }
+						}
+					]
+				},
+				"events": {
+					"link-action": "if(document.getElementById(this.request.request[0].id)){document.getElementById(this.request.request[0].id).show = true;}else{this.send = true;}"
+				}
+            },
+            
+            {
+                "caption": "Mapa",
+                "addClass": "map_01",
+                "title":"GoogleMaps / MapBopx",
+                "events": {
+                    "link-action": "document.getElementById('gt-map').toggle()"
+                }
+            },
+            {
+                "caption": "Salir",
+                "addClass": "exit",
+                "title":"Salir",
+                "events": {
+                    "link-action": "console.log(this)"
+                }
+            }
+        ]
+    }
+}

@@ -1,8 +1,8 @@
 package whendy
 
-import "sevian.com/tool"
+import "sevian.com/whendy/tool"
 
-//var session map[string]interface{}
+// var session map[string]interface{}
 var session = make(map[string]interface{})
 
 type Store struct {

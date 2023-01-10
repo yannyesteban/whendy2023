@@ -11,13 +11,16 @@ import (
 	"net/http"
 	"time"
 
-	"sevian.com/memory"
-	"sevian.com/tool"
 	"sevian.com/whendy"
+	//"sevian.com/whendy/memory"
+	"sevian.com/whendy/session/memory"
+	"sevian.com/whendy/tool"
 
 	//_ "github.com/go-sql-driver/mysql"
 	//"github.com/astaxie/beego/session"
-	"sevian.com/session"
+
+	_ "github.com/go-sql-driver/mysql"
+	"sevian.com/whendy/session"
 )
 
 var st whendy.Store
@@ -29,7 +32,49 @@ var manager *session.Manager
 
 type router struct{}
 
+type Unit struct {
+	Id          string
+	Name        string
+	Eparams     map[string]interface{}
+	SetPanel    string
+	AppendTo    string
+	Method      string
+	ReplayToken string
+	OnDesing    bool
+	OnDebug     bool
+
+	Response      []interface{}
+	AcceptedRoles []string
+}
+
+func (obj *Unit) Init(config map[string]interface{}) {
+
+	tool.ConfigStructure(obj, config)
+
+}
+
+func (Unit) EvalMethod() {
+	fmt.Println("Unit 2 App")
+}
+
+func Poder() int {
+	return 88
+}
+
 func main() {
+
+	Start()
+
+	dbInfo := tool.LoadArrayJsonFile("configuration/bd.json")
+
+	whendy.DbInit(dbInfo)
+
+	//element.Register("unit2", Unit{})
+
+	//k, _ := element.New("unit2")
+
+	//ee := k.(*Unit)
+	//ee.EvalMethod()
 
 	session.Register("memory", &memory.Memory{ /*sessions: make(map[string]Store)*/ })
 
@@ -52,7 +97,19 @@ func main() {
 	}
 	log.Fatal(s.ListenAndServe())
 }
+
 func (r *router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+
+	wh := whendy.Whendy{Ini: tool.LoadJsonFile("configuration/init.json")}
+	//wh.Init(tool.LoadJsonFile("configuration/init.json"))
+
+	fmt.Println(" ini ", wh.Ini["name"])
+	wh.Start(w, req)
+	wh.Render()
+
+}
+
+func (r *router) ServeHTTP1(w http.ResponseWriter, req *http.Request) {
 
 	fmt.Println(req.Header.Get("Application-Mode"))
 
@@ -95,7 +152,8 @@ func (r *router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	fmt.Fprintf(w, `[6,7,8]`)
 
-	wh := whendy.Whendy{}
+	//wh := whendy.Whendy{}
+	//wh.
 
 }
 
@@ -205,7 +263,7 @@ func main2() {
 
 	fmt.Println("hola ", st.GetSes("APP_NAME").(string))
 
-	fmt.Println("cosas 2: ", whendy.Test1())
+	fmt.Println("cosas 2: ", 55)
 
 	w := whendy.Whendy{}
 
@@ -227,7 +285,7 @@ func main2() {
 	//fmt.Println(dat["TEMPLATES_PATH"])
 	//fmt.Println(str)
 
-	fmt.Println(w.Render())
+	fmt.Println(w.Render1())
 
 	s := whendy.Server{}
 

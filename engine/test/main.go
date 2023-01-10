@@ -24,7 +24,7 @@ func hello(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func main() {
+func main6() {
 
 	http.HandleFunc("/hello", hello)
 	http.ListenAndServe(":8090", nil)

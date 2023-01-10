@@ -3,7 +3,7 @@ package whendy
 import (
 	"fmt"
 
-	"sevian.com/tool"
+	"sevian.com/whendy/tool"
 )
 
 type Device struct {

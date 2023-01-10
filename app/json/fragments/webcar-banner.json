@@ -1,5 +1,0 @@
-{
-    "name": "webcar-banner",
-    
-    "templateFile":"{@TEMPLATES_PATH}/banner.html"
-}

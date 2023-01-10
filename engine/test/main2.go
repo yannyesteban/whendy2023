@@ -14,7 +14,7 @@ func (h *helloHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	fmt.Fprintf(w, "Hello there!")
 }
 
-func main() {
+func main5() {
 
 	mux := http.NewServeMux()
 
