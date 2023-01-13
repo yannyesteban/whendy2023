@@ -1,4 +1,4 @@
-package main
+package init2
 
 import (
 	"sevian.com/whendy"

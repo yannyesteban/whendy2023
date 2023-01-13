@@ -1,6 +1,7 @@
 package whendy
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -10,6 +11,26 @@ import (
 )
 
 var scheme = map[string]reflect.Type{}
+
+type InfoUser struct {
+	User  string
+	Roles []string
+}
+
+type AppComponent interface {
+	AppendTo(string)
+	SetPanel(string)
+	SetParams(map[string]interface{})
+	SetMethod(string)
+}
+
+type UserAdmin interface {
+	GetUserInfo() InfoUser
+}
+
+type ElementAdmin interface {
+	GetElements() []InfoElement
+}
 
 type InfoElement struct {
 	Element  string
@@ -21,36 +42,37 @@ type InfoElement struct {
 	Name     string
 }
 
-func (i *InfoElement) Set(m map[string]interface{}) {
-	var value interface{}
-	var ok bool
+/*
+	func (i *InfoElement) Set(m map[string]interface{}) {
+		var value interface{}
+		var ok bool
 
-	fmt.Println(" es element: ", m["element"])
-	if value, ok = m["element"]; ok {
-		i.Element = value.(string)
-	}
+		fmt.Println(" es element: ", m["element"])
+		if value, ok = m["element"]; ok {
+			i.Element = value.(string)
+		}
 
-	if value, ok = m["id"]; ok {
-		i.Id = value.(string)
-	}
+		if value, ok = m["id"]; ok {
+			i.Id = value.(string)
+		}
 
-	if value, ok = m["name"]; ok {
-		i.Name = value.(string)
-	}
+		if value, ok = m["name"]; ok {
+			i.Name = value.(string)
+		}
 
-	if value, ok = m["method"]; ok {
-		i.Method = value.(string)
-	}
-	//i.Id = m["id"].(string)
-	i.Eparams = m["eparams"].(map[string]interface{})
+		if value, ok = m["method"]; ok {
+			i.Method = value.(string)
+		}
+		//i.Id = m["id"].(string)
+		i.Eparams = m["eparams"].(map[string]interface{})
 
 }
-
+*/
 type Whendy struct {
-	Id     string
-	Name   string
-	Method string
-	Edad   int
+	IniSource string
+	Id        string
+	Name      string
+	Method    string
 
 	w   http.ResponseWriter
 	req *http.Request
@@ -58,58 +80,39 @@ type Whendy struct {
 	Ini map[string]interface{}
 
 	response []interface{}
+
+	iniElement InfoElement
+	user       User
 }
 
-func (w *Whendy) Init(config map[string]interface{}) {
+func (whendy *Whendy) Init() {
 
-	tool.ConfigStructure(w, config)
+	str := tool.LoadFile(whendy.IniSource)
+
+	json.Unmarshal([]byte(str), &whendy.iniElement)
 
 }
 
 func (w *Whendy) Element(e Element) {
 
-	e.EvalMethod()
+	e.EvalMethod("nope")
 }
 
-func (Whendy) Render1() string {
-
-	RegisterType("device", Device{})
-	RegisterType("unit", Unit{})
-
-	el, err := NewElement("unit")
-
-	if err == nil {
-		el.EvalMethod()
-	} else {
-		fmt.Println(err)
-	}
-
-	return "render HTML"
-}
-
-func (wh Whendy) EvalStartMode() {
+func (wh *Whendy) EvalStartMode() {
 
 	mode := wh.req.Header.Get("Application-Mode")
 
 	if mode == "start" {
 		fmt.Println(wh.req.Header.Get("Application-Mode"))
-		info := InfoElement{}
-		info.Set(wh.Ini)
-		wh.setElement(info)
+
+		wh.setElement(wh.iniElement)
 	}
 
 }
-func (whendy Whendy) Render() {
+func (whendy *Whendy) Render() {
 
 	whendy.EvalStartMode()
 	w := whendy.w
-
-	element.Register("unit", Unit{})
-
-	k, _ := element.New("unit2")
-
-	ee := k.(Element)
-	ee.EvalMethod()
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method, Application-Mode, authorization, sid,  Application-Id")
@@ -118,8 +121,16 @@ func (whendy Whendy) Render() {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	whendy.getResponse()
-	fmt.Fprintf(w, `[9,4,8,16,32]`)
+	//fmt.Fprintf(w, `[9,4,8,16,32]`)
+
+	jsonData, err := json.Marshal(whendy.getResponse())
+	if err != nil {
+		fmt.Printf("could not marshal json: %s\n", err)
+		return
+	}
+
+	fmt.Fprint(w, string(jsonData))
+	fmt.Println("x es ", X)
 
 }
 func New(i interface{}) (interface{}, error) {
@@ -150,37 +161,71 @@ func NewElement(name string) (Element, error) {
 }
 
 func (whendy *Whendy) Start(w http.ResponseWriter, req *http.Request) {
+
+	whendy.user = User{}
+	whendy.user.Init(w, req)
+
 	whendy.w = w
 	whendy.req = req
-
-	fmt.Println(req.Header.Get("Application-Mode"))
-
-	//q, _ := req.Cookie("accessToken")
-	//println(q.Value)
-
-	//sess.Set("username", "yanny1")
-	//username := sess.Get("username")
-
-	//fmt.Println(username)
-	//st.LoadJson("configuration/constants.json")
+	whendy.Init()
 
 }
 
 func (whendy *Whendy) setElement(info InfoElement) {
 
-	fuel := tool.LoadJsonFile(info.Name)
-
-	fmt.Println("...", fuel["templateFile"])
 	typ, _ := element.New(info.Element)
 
 	ele := typ.(Element)
-	ele.Init(fuel)
-	ele.EvalMethod()
 
-	fmt.Println(" QHE INFO ", info.Id)
-	//int64(info.Eparams["cedula"].(float64)
+	ele.Init(info)
+	ele.EvalMethod(info.Method)
+
+	whendy.mergeResponse(ele.GetResponse())
+
+	whendy.doUserAdmin(typ)
+	whendy.doElementAdmin(typ)
+
+	fmt.Println("user ", whendy.user.user)
+
+}
+
+func (whendy *Whendy) doUserAdmin(typ interface{}) {
+	ele, ok := typ.(UserAdmin)
+
+	if !ok {
+		return
+	}
+
+	Print(ele.GetUserInfo())
+}
+
+func (whendy *Whendy) doElementAdmin(typ interface{}) {
+	ele, ok := typ.(ElementAdmin)
+
+	if !ok {
+		return
+	}
+
+	Print(ele.GetElements())
 }
 
 func (whendy *Whendy) getResponse() []interface{} {
+
 	return whendy.response
+}
+
+func (whendy *Whendy) mergeResponse(response []interface{}) {
+
+	whendy.response = append(whendy.response, response...)
+
+}
+
+func Print(face interface{}) {
+	jsonData, err := json.Marshal(face)
+	if err != nil {
+		fmt.Printf("could not marshal json: %s\n", err)
+		return
+	}
+
+	fmt.Printf("merge data Printing : %s\n", jsonData)
 }

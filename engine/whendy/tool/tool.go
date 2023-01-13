@@ -2,6 +2,7 @@ package tool
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"reflect"
 )
@@ -10,7 +11,19 @@ func GetFileName(name string, pattern string) string {
 
 	return "yanny"
 }
+func LoadFile(name string) string {
 
+	dat, err := os.ReadFile(name)
+
+	if err != nil {
+		panic(err)
+	}
+
+	str := string(dat)
+
+	return str
+
+}
 func LoadJsonFile(name string) map[string]interface{} {
 
 	dat, err := os.ReadFile(name)
@@ -23,6 +36,28 @@ func LoadJsonFile(name string) map[string]interface{} {
 
 	byt := []byte(str)
 	var data map[string]interface{}
+
+	if err := json.Unmarshal(byt, &data); err != nil {
+		panic(err)
+	}
+
+	//print(data["BUILD"].(string))
+
+	return data
+}
+
+func Load(name string) interface{} {
+
+	dat, err := os.ReadFile(name)
+
+	if err != nil {
+		panic(err)
+	}
+
+	str := string(dat)
+
+	byt := []byte(str)
+	var data interface{}
 
 	if err := json.Unmarshal(byt, &data); err != nil {
 		panic(err)
@@ -66,9 +101,11 @@ func ConfigStructure(obj interface{}, data map[string]interface{}) {
 	if s.Kind() == reflect.Struct {
 		for k, v := range data {
 			field := s.FieldByName(k)
-			if field.IsValid() {
 
+			if field.IsValid() {
+				fmt.Println("is valid name ", k)
 				if field.CanSet() {
+					fmt.Println("can set name ", k)
 					// change value of Field
 
 					if field.Kind() == reflect.Int {

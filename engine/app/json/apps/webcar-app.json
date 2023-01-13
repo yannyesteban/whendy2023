@@ -1,10 +1,9 @@
 {
 	"id": "gtcomm",
 	"name": "home",
-	"templateFile": "{@TEMPLATES_PATH}/webcar.html",
+	"templateFile": "templates/webcar.html",
 	"elements": [
 		{
-			
 			"appendTo": "wh-app",
 			"element": "gt-app-layout",
 			"name": "",
@@ -12,7 +11,6 @@
 			"eparams": {}
 		},
 		{
-			
 			"appendTo": "#wh-menu .menu-1",
 			"element": "menu",
 			"name": "{@JSON_PATH}menus/MainMenu.json",
@@ -20,9 +18,17 @@
 			"eparams": {}
 		}
 	],
-	"className": ["webcar"],
-	"acceptedRoles": ["** public **"],
-	"cssSheetss": ["css/reset.css", "css/main.css", "https://api.mapbox.com/mapbox-gl-js/v1.7.0/mapbox-gl.css"],
+	"className": [
+		"webcar"
+	],
+	"acceptedRoles": [
+		"** public **"
+	],
+	"cssSheetss": [
+		"css/reset.css",
+		"css/main.css",
+		"https://api.mapbox.com/mapbox-gl-js/v1.7.0/mapbox-gl.css"
+	],
 	"jsModules": [
 		"../js/GoogleMaps.js",
 		"../js/MapBox.js",
@@ -51,7 +57,6 @@
 		"../js/gt/GTTrace.js",
 		"../js/gt/GTUnitInfo.js",
 		"../js/gt/GTAppLayout.js"
-		
 	],
 	"modules": [
 		{

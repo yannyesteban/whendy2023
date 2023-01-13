@@ -1,18 +1,16 @@
 package main
 
 import (
-	"crypto/rand"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"time"
 
 	"sevian.com/whendy"
 	//"sevian.com/whendy/memory"
+
 	"sevian.com/whendy/session/memory"
 	"sevian.com/whendy/tool"
 
@@ -20,13 +18,11 @@ import (
 	//"github.com/astaxie/beego/session"
 
 	_ "github.com/go-sql-driver/mysql"
+	"sevian.com/app/init2"
 	"sevian.com/whendy/session"
 )
 
 var st whendy.Store
-var contador = 0
-
-//var globalSessions *session.Manager
 
 var manager *session.Manager
 
@@ -47,34 +43,13 @@ type Unit struct {
 	AcceptedRoles []string
 }
 
-func (obj *Unit) Init(config map[string]interface{}) {
-
-	tool.ConfigStructure(obj, config)
-
-}
-
-func (Unit) EvalMethod() {
-	fmt.Println("Unit 2 App")
-}
-
-func Poder() int {
-	return 88
-}
-
 func main() {
 
-	Start()
+	init2.Start()
 
 	dbInfo := tool.LoadArrayJsonFile("configuration/bd.json")
 
 	whendy.DbInit(dbInfo)
-
-	//element.Register("unit2", Unit{})
-
-	//k, _ := element.New("unit2")
-
-	//ee := k.(*Unit)
-	//ee.EvalMethod()
 
 	session.Register("memory", &memory.Memory{ /*sessions: make(map[string]Store)*/ })
 
@@ -100,10 +75,8 @@ func main() {
 
 func (r *router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
-	wh := whendy.Whendy{Ini: tool.LoadJsonFile("configuration/init.json")}
-	//wh.Init(tool.LoadJsonFile("configuration/init.json"))
-
-	fmt.Println(" ini ", wh.Ini["name"])
+	wh := whendy.Whendy{IniSource: "configuration/init.json"}
+	//fmt.Println(" ini ", wh.Ini["name"])
 	wh.Start(w, req)
 	wh.Render()
 
@@ -113,8 +86,6 @@ func (r *router) ServeHTTP1(w http.ResponseWriter, req *http.Request) {
 
 	fmt.Println(req.Header.Get("Application-Mode"))
 
-	contador++
-
 	sess := manager.Start(w, req)
 
 	for _, c := range req.Cookies() {
@@ -122,7 +93,6 @@ func (r *router) ServeHTTP1(w http.ResponseWriter, req *http.Request) {
 	}
 	fmt.Println(sess.Get("n"))
 	sess.Set("name", "yanny esteban")
-	sess.Set("VALOR de n: ", contador)
 
 	manager.Test()
 	//q, _ := req.Cookie("accessToken")
@@ -151,9 +121,6 @@ func (r *router) ServeHTTP1(w http.ResponseWriter, req *http.Request) {
 	//defer sess.SessionRelease(w)
 
 	fmt.Fprintf(w, `[6,7,8]`)
-
-	//wh := whendy.Whendy{}
-	//wh.
 
 }
 
@@ -239,22 +206,6 @@ func HandleJsonRequest(w http.ResponseWriter, req *http.Request) {
 	//fmt.Fprintf(w, "%s", reqBody)
 	json.NewEncoder(w).Encode(data)
 }
-func SessionId() string {
-	b := make([]byte, 32)
-	if _, err := io.ReadFull(rand.Reader, b); err != nil {
-		return ""
-	}
-	return base64.URLEncoding.EncodeToString(b)
-}
-
-func main3() {
-
-	http.HandleFunc("/json2", HandleJsonRequest)
-	print("hola\n\n")
-	s := whendy.Server{}
-	s.Start()
-
-}
 
 func main2() {
 
@@ -267,7 +218,7 @@ func main2() {
 
 	w := whendy.Whendy{}
 
-	w.Init(tool.LoadJsonFile("configuration/init.json"))
+	w.Init()
 	dbInfo := tool.LoadArrayJsonFile("configuration/bd.json")
 
 	whendy.DbInit(dbInfo)
@@ -284,8 +235,6 @@ func main2() {
 	*/
 	//fmt.Println(dat["TEMPLATES_PATH"])
 	//fmt.Println(str)
-
-	fmt.Println(w.Render1())
 
 	s := whendy.Server{}
 

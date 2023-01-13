@@ -1,6 +1,9 @@
 package whendy
 
 type Element interface {
-	EvalMethod()
-	Init(map[string]interface{})
+	//LoadConfig(string)
+	EvalMethod(method string)
+	Init(info InfoElement)
+	GetResponse() []interface{}
+	AddResponse(response interface{})
 }

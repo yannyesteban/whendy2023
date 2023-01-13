@@ -2,8 +2,6 @@ package whendy
 
 import (
 	"fmt"
-
-	"sevian.com/whendy/tool"
 )
 
 type Unit struct {
@@ -21,12 +19,21 @@ type Unit struct {
 	AcceptedRoles []string
 }
 
-func (obj *Unit) Init(config map[string]interface{}) {
+func (obj *Unit) Init(info InfoElement) {
 
-	tool.ConfigStructure(obj, config)
+	//tool.ConfigStructure(obj, config)
 
 }
 
-func (Unit) EvalMethod() {
+func (Unit) EvalMethod(method string) {
 	fmt.Println("Unit App 2023")
+}
+
+func (a *Unit) GetResponse() []interface{} {
+
+	return a.Response
+}
+
+func (a *Unit) AddResponse(response interface{}) {
+	a.Response = append(a.Response, response)
 }
