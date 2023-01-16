@@ -75,8 +75,17 @@ func main() {
 
 func (r *router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
-	wh := whendy.Whendy{IniSource: "configuration/init.json"}
-	//fmt.Println(" ini ", wh.Ini["name"])
+	sess := manager.Start(w, req)
+
+	db := whendy.DB{}
+	db.Init(tool.LoadArrayJsonFile("configuration/bd.json"))
+
+	store := whendy.Store{Session: sess, DB: &db}
+	store.SetSessionData(tool.LoadJsonFile("configuration/constants.json"))
+	store.Start(w, req)
+
+	wh := whendy.Whendy{IniSource: "configuration/init.json", Store: &store}
+
 	wh.Start(w, req)
 	wh.Render()
 

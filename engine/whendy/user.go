@@ -18,7 +18,7 @@ var X = 0
 func (u *User) Init(w http.ResponseWriter, req *http.Request) {
 
 	X++
-	jwt := j.JWT{Key: "esperanza@@2023*"}
+	jwt := j.JWT{Key: "yanny"}
 
 	typ, err := jwt.VerifyHeader(req)
 

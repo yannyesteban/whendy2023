@@ -10,6 +10,15 @@ import (
 	"sevian.com/whendy/tool"
 )
 
+type Element interface {
+	//LoadConfig(string)
+	EvalMethod(method string)
+	Init(info InfoElement)
+	GetResponse() []interface{}
+	AddResponse(response interface{})
+	SetStore(*Store)
+}
+
 var scheme = map[string]reflect.Type{}
 
 type InfoUser struct {
@@ -83,6 +92,7 @@ type Whendy struct {
 
 	iniElement InfoElement
 	user       User
+	Store      *Store
 }
 
 func (whendy *Whendy) Init() {
@@ -169,6 +179,11 @@ func (whendy *Whendy) Start(w http.ResponseWriter, req *http.Request) {
 	whendy.req = req
 	whendy.Init()
 
+	fmt.Println(whendy.Store.Session.SessionID())
+
+	//whendy.Store.Session.Set("name", "yes")
+	//fmt.Println("whendy.Store.GetSes -> ", whendy.Store.Session.Get("name"))
+
 }
 
 func (whendy *Whendy) setElement(info InfoElement) {
@@ -176,7 +191,7 @@ func (whendy *Whendy) setElement(info InfoElement) {
 	typ, _ := element.New(info.Element)
 
 	ele := typ.(Element)
-
+	ele.SetStore(whendy.Store)
 	ele.Init(info)
 	ele.EvalMethod(info.Method)
 

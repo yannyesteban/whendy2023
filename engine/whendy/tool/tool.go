@@ -24,8 +24,9 @@ func LoadFile(name string) string {
 	return str
 
 }
-func LoadJsonFile(name string) map[string]interface{} {
+func LoadJsonFile(name string) (data map[string]interface{}) {
 
+	data = make(map[string]interface{})
 	dat, err := os.ReadFile(name)
 
 	if err != nil {
@@ -35,15 +36,12 @@ func LoadJsonFile(name string) map[string]interface{} {
 	str := string(dat)
 
 	byt := []byte(str)
-	var data map[string]interface{}
 
 	if err := json.Unmarshal(byt, &data); err != nil {
 		panic(err)
 	}
 
-	//print(data["BUILD"].(string))
-
-	return data
+	return
 }
 
 func Load(name string) interface{} {

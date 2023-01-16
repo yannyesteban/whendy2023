@@ -12,6 +12,11 @@ import (
 	"crypto/sha256"
 )
 
+type Header struct {
+	Alg string `json:"alg"`
+	Typ string `json:"typ"`
+}
+
 var (
 	sep    = []byte(".")
 	pad    = []byte("=")
@@ -27,6 +32,7 @@ func (jwt *JWT) VerifyHeader(req *http.Request) ([]byte, error) {
 
 	auth := req.Header.Get("Authorization")
 
+	fmt.Println("autorization ", auth)
 	if auth != "" {
 
 		value := strings.Split(auth, " ")
@@ -75,6 +81,7 @@ func (jwt *JWT) Verify(t string) ([]byte, error) {
 	expectedSignature := jwt.hash(bytes.Join([][]byte{token[0], token[1]}, sep))
 
 	if !hmac.Equal(signature, expectedSignature) {
+		fmt.Println(fmt.Errorf("invalid token %s", t))
 		return nil, fmt.Errorf("invalid token %s", t)
 	}
 
@@ -87,11 +94,6 @@ func (jwt *JWT) hash(message []byte) []byte {
 	ha := hmac.New(sha256.New, key)
 	ha.Write(message)
 	return Base64Encode(ha.Sum(nil))
-}
-
-type Header struct {
-	Alg string `json:"alg"`
-	Typ string `json:"typ"`
 }
 
 func Base64Encode(src []byte) []byte {

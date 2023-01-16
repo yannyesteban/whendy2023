@@ -2,6 +2,7 @@ package wc
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"sevian.com/whendy"
 	"sevian.com/whendy/tool"
@@ -27,6 +28,8 @@ type App struct {
 	Method   string
 	response []interface{}
 
+	store *whendy.Store
+
 	//ConfigStructure func(interface{}, map[string]interface{})
 }
 
@@ -40,10 +43,42 @@ func (a *App) Init(info whendy.InfoElement) {
 
 func (a *App) EvalMethod(method string) {
 
+	fmt.Println("SEsion ", a.store.GetSes("APP_PATH"))
 	switch method {
 	case "init":
 		a.load()
 	}
+
+	db := a.store.GetDB("gt") //sql.Open("mysql", "root:123456@/gt")
+	/*
+		if err != nil {
+			panic(err.Error()) // proper error handling instead of panic in your app
+		}
+	*/
+	defer db.Close()
+
+	stmtOut, err := db.Prepare("SELECT id, name  FROM unit u where id=?")
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	defer stmtOut.Close()
+
+	var unitId int
+	var unitName string // we "scan" the result in here
+
+	// Query the square-number of 13
+	err = stmtOut.QueryRow(2023).Scan(&unitId, &unitName) // WHERE number = 13
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	fmt.Printf("The square number of 13 is: %d", unitId)
+
+	// Query another number.. 1 maybe?
+	err = stmtOut.QueryRow(2024).Scan(&unitId, &unitName) // WHERE number = 1
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	fmt.Printf("The square number of 2024 is: %v %v\n", unitId, unitName)
 }
 
 func (a *App) GetResponse() []interface{} {
@@ -82,4 +117,8 @@ func (app *App) GetElements() []whendy.InfoElement {
 
 	return app.Elements
 
+}
+
+func (app *App) SetStore(store *whendy.Store) {
+	app.store = store
 }
