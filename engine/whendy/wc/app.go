@@ -122,3 +122,9 @@ func (app *App) GetElements() []whendy.InfoElement {
 func (app *App) SetStore(store *whendy.Store) {
 	app.store = store
 }
+
+func (app *App) GetUserInfo() whendy.InfoUser {
+	i := whendy.InfoUser{User: "juan", Roles: []string{"admin"}}
+
+	return i
+}

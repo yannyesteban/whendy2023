@@ -11,34 +11,38 @@ import (
 type User struct {
 	user  string
 	roles []string
+	Key   string
 }
-
-var X = 0
 
 func (u *User) Init(w http.ResponseWriter, req *http.Request) {
 
-	X++
-	jwt := j.JWT{Key: "yanny"}
+	jwt := j.JWT{Key: u.Key}
 
 	typ, err := jwt.VerifyHeader(req)
 
 	if err != nil {
 		fmt.Println("user not found")
-		u.Set("")
-		u.SetRoles(nil)
+		u.user = ""
+		u.roles = nil
 		return
 	}
 
 	info := InfoUser{}
 	json.Unmarshal(typ, &info)
 
-	u.Set(info.User)
-	u.SetRoles(info.Roles)
+	u.user = info.User
+	u.roles = info.Roles
 
 }
 
-func (u *User) Set(user string) {
-	u.user = user
+func (u *User) Set(info InfoUser) string {
+	u.user = info.User
+	u.roles = info.Roles
+
+	jwt := j.JWT{Key: u.Key}
+
+	return jwt.Generate(info)
+
 }
 
 func (u *User) SetRoles(roles []string) {

@@ -20,17 +20,20 @@ const MAX_UPLOAD_SIZE = 1024 * 1024 // 1MB
 type Store struct {
 	Session ses.Session
 	vform   map[string]interface{}
-	user    User
+	vexp    map[string]interface{}
+	User    User
 	DB      *DB
 }
 
 func (store *Store) Start(w http.ResponseWriter, req *http.Request) {
-	store.user = User{}
-	store.user.Init(w, req)
+	//store.User = User{}
+	store.User.Init(w, req)
 
+	store.vform = make(map[string]interface{})
+	store.vexp = make(map[string]interface{})
 	//UploadHandler(w, req)
 
-	fmt.Println("el usuario es ", store.user.Get())
+	fmt.Println("el usuario es ", store.User.Get())
 
 	mode := req.Header.Get("Content-Type")
 
@@ -42,14 +45,14 @@ func (store *Store) Start(w http.ResponseWriter, req *http.Request) {
 		json.Unmarshal(b, &store.vform)
 
 	} else if req.Method == "POST" {
-		store.vform = make(map[string]interface{})
+
 		req.ParseForm()
 		for key := range req.Form {
 			store.vform[key] = req.FormValue(key)
 		}
 
 	} else if req.Method == "GET" {
-		store.vform = make(map[string]interface{})
+
 		values := req.URL.Query()
 		for key := range values {
 			store.vform[key] = req.URL.Query().Get(key)
@@ -65,6 +68,23 @@ func (s *Store) SetForm(key string, value interface{}) {
 
 func (s *Store) GetForm(key string) interface{} {
 	return s.vform[key]
+
+}
+
+func (s *Store) LoadExp(data map[string]interface{}) {
+	for key, value := range data {
+		s.vexp[key] = value
+	}
+
+}
+
+func (s *Store) SetExp(key string, value interface{}) {
+
+	s.vexp[key] = value
+}
+
+func (s *Store) GetExp(key string) interface{} {
+	return s.vexp[key]
 
 }
 

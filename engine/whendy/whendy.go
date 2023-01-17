@@ -91,8 +91,8 @@ type Whendy struct {
 	response []interface{}
 
 	iniElement InfoElement
-	user       User
-	Store      *Store
+
+	Store *Store
 }
 
 func (whendy *Whendy) Init() {
@@ -140,7 +140,6 @@ func (whendy *Whendy) Render() {
 	}
 
 	fmt.Fprint(w, string(jsonData))
-	fmt.Println("x es ", X)
 
 }
 func New(i interface{}) (interface{}, error) {
@@ -172,8 +171,8 @@ func NewElement(name string) (Element, error) {
 
 func (whendy *Whendy) Start(w http.ResponseWriter, req *http.Request) {
 
-	whendy.user = User{}
-	whendy.user.Init(w, req)
+	//whendy.user = User{Key: "yannye"}
+	//whendy.user.Init(w, req)
 
 	whendy.w = w
 	whendy.req = req
@@ -188,6 +187,10 @@ func (whendy *Whendy) Start(w http.ResponseWriter, req *http.Request) {
 
 func (whendy *Whendy) setElement(info InfoElement) {
 
+	whendy.Store.SetExp("ID_", info.Id)
+	whendy.Store.SetExp("ELEMENT_", info.Element)
+	whendy.Store.LoadExp(info.Eparams)
+
 	typ, _ := element.New(info.Element)
 
 	ele := typ.(Element)
@@ -200,8 +203,12 @@ func (whendy *Whendy) setElement(info InfoElement) {
 	whendy.doUserAdmin(typ)
 	whendy.doElementAdmin(typ)
 
-	fmt.Println("user ", whendy.user.user)
-
+	fmt.Println("user ", whendy.Store.User.Get())
+	/*
+		var data map[string]interface{}
+		err := json.NewDecoder(req.Body).Decode(&data)
+		json.NewEncoder(w).Encode(data)
+	*/
 }
 
 func (whendy *Whendy) doUserAdmin(typ interface{}) {
@@ -210,6 +217,12 @@ func (whendy *Whendy) doUserAdmin(typ interface{}) {
 	if !ok {
 		return
 	}
+
+	i := ele.GetUserInfo()
+
+	token := whendy.Store.User.Set(i)
+
+	whendy.w.Header().Set("Authorization", token)
 
 	Print(ele.GetUserInfo())
 }
