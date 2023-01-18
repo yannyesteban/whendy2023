@@ -42,6 +42,7 @@ type ElementAdmin interface {
 }
 
 type InfoElement struct {
+	Type     string
 	Element  string
 	Id       string
 	Eparams  map[string]interface{}
@@ -101,6 +102,20 @@ func (whendy *Whendy) Init() {
 
 	json.Unmarshal([]byte(str), &whendy.iniElement)
 
+	fmt.Println("__app_request", whendy.Store.GetReq("__app_request"))
+
+	data := whendy.Store.GetReq("__app_request")
+
+	data2 := data.(string)
+	fmt.Println("data 2 ", data2)
+	var req []InfoElement
+	//467604
+	//req = data.([])
+
+	json.Unmarshal([]byte(data2), &req)
+	whendy.evalRequest(req)
+	fmt.Println("REQ ", req)
+
 }
 
 func (w *Whendy) Element(e Element) {
@@ -119,6 +134,32 @@ func (wh *Whendy) EvalStartMode() {
 	}
 
 }
+func (wh *Whendy) evalRequest(requests []InfoElement) {
+
+	for _, request := range requests {
+		wh.evalCommand(request)
+	}
+}
+
+func (wh *Whendy) evalCommand(command InfoElement) {
+
+	//$command = Tool::toJson($command);
+
+	switch command.Type {
+
+	case "init":
+		wh.setElement(command)
+
+	case "element":
+		wh.setElement(command)
+
+	case "update":
+
+	default:
+
+	}
+}
+
 func (whendy *Whendy) Render() {
 
 	whendy.EvalStartMode()
@@ -218,13 +259,14 @@ func (whendy *Whendy) doUserAdmin(typ interface{}) {
 		return
 	}
 
-	i := ele.GetUserInfo()
+	info := ele.GetUserInfo()
 
-	token := whendy.Store.User.Set(i)
+	if info.User != "" {
+		token := whendy.Store.User.Set(info)
+		whendy.w.Header().Set("Authorization", token)
+		fmt.Println("login correct to ", info.User)
+	}
 
-	whendy.w.Header().Set("Authorization", token)
-
-	Print(ele.GetUserInfo())
 }
 
 func (whendy *Whendy) doElementAdmin(typ interface{}) {

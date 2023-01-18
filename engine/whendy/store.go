@@ -61,6 +61,16 @@ func (store *Store) Start(w http.ResponseWriter, req *http.Request) {
 
 }
 
+func (s *Store) SetReq(key string, value interface{}) {
+
+	s.vform[key] = value
+}
+
+func (s *Store) GetReq(key string) interface{} {
+	return s.vform[key]
+
+}
+
 func (s *Store) SetForm(key string, value interface{}) {
 
 	s.vform[key] = value

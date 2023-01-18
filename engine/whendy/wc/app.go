@@ -123,7 +123,7 @@ func (app *App) SetStore(store *whendy.Store) {
 	app.store = store
 }
 
-func (app *App) GetUserInfo() whendy.InfoUser {
+func (app *App) GetUserInfo1() whendy.InfoUser {
 	i := whendy.InfoUser{User: "juan", Roles: []string{"admin"}}
 
 	return i
