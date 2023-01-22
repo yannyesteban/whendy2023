@@ -75,30 +75,44 @@ func (a *User) login() {
 	*/
 	//defer db.Close()
 
-	stmtOut, err := db.Prepare("SELECT u.user, u.pass FROM _sg_users as u WHERE u.user=?")
+	stmtOut, err := db.Prepare("SELECT u.user, u.pass, u.status, COALESCE(u.expiration<now(),0) as expirated FROM _sg_users as u WHERE u.user = ?")
+
 	if err != nil {
 		panic(err.Error())
 	}
+
 	defer stmtOut.Close()
 
 	var user string
 	var pass string
+	var status int
+	var expirated int
 
-	err = stmtOut.QueryRow(rUser).Scan(&user, &pass) // WHERE number = 13
+	err = stmtOut.QueryRow(rUser).Scan(&user, &pass, &status, &expirated) // WHERE number = 13
 	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
+		panic(err.Error())
 	}
+
+	a.error = 0
 
 	if md5Hash(rPass) == pass {
 
-		a.error = 0
+		if status != 1 {
+			a.error = 3
+		} else if expirated == 1 {
+			a.error = 4
+		}
 
+	} else {
+		a.error = 2
+	}
+
+	if a.error == 0 {
 		a.info.User = user
 		a.info.Roles = a.getRoles(user)
 	} else {
 		a.info.User = ""
 		a.info.Roles = nil
-		a.error = 1
 	}
 
 }
