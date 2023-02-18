@@ -9,9 +9,9 @@ import (
 	"unicode/utf8"
 )
 
-func main2() {
+func main() {
 	// src is the input that we want to tokenize.
-	src := []byte("cos(x) + 1i*sin(x) // Euler")
+	src := []byte(LoadFile("texto.txt")) //"日本語"//("cos(x) + 1i*sin(x) // Euler")
 
 	// Initialize the scanner.
 	var s sc.Scanner
@@ -29,14 +29,14 @@ func main2() {
 	}
 
 }
-func main() {
+func main2() {
 	source := LoadFile("texto.txt") //"日本語"
 
 	p := Parse{}
 	p.start(source)
 
 	var s scanner.Scanner
-	println(s)
+	fmt.Println(s)
 
 	//r, w := utf8.DecodeRuneInString(nihongo[1:])
 
