@@ -2,31 +2,36 @@ package main
 
 import (
 	"fmt"
-	sc "go/scanner"
-	"go/token"
 	"os"
 	"text/scanner"
 	"unicode/utf8"
+
+	"sevian.com/whendy/logic"
 )
 
 func main() {
+
 	// src is the input that we want to tokenize.
-	src := []byte(LoadFile("texto.txt")) //"日本語"//("cos(x) + 1i*sin(x) // Euler")
+	//src := []byte(LoadFile("texto.txt")) //"日本語"//("cos(x) + 1i*sin(x) // Euler")
 
-	// Initialize the scanner.
-	var s sc.Scanner
-	fset := token.NewFileSet()                      // positions are relative to fset
-	file := fset.AddFile("", fset.Base(), len(src)) // register input "file"
-	s.Init(file, src, nil /* no error handler */, scanner.ScanComments)
+	ll := logic.Lex{}
+	ll.Start(LoadFile("texto.txt"))
+	/*
+		// Initialize the scanner.
+		var s sc.Scanner
+		fset := token.NewFileSet()                      // positions are relative to fset
+		file := fset.AddFile("", fset.Base(), len(src)) // register input "file"
+		s.Init(file, src, nil /* no error handler * /, scanner.ScanComments)
 
-	// Repeated calls to Scan yield the token sequence found in the input.
-	for {
-		pos, tok, lit := s.Scan()
-		if tok == token.EOF {
-			break
+		// Repeated calls to Scan yield the token sequence found in the input.
+		for {
+			pos, tok, lit := s.Scan()
+			if tok == token.EOF {
+				break
+			}
+			fmt.Printf("%s\t%s\t%q\n", fset.Position(pos), tok, lit)
 		}
-		fmt.Printf("%s\t%s\t%q\n", fset.Position(pos), tok, lit)
-	}
+	*/
 
 }
 func main2() {
@@ -108,3 +113,5 @@ func (p Parse) isS(s rune) bool {
 
 	return false
 }
+
+
