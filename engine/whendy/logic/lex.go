@@ -23,6 +23,10 @@ func (p *Lex) Start(text string) {
 	p.text = text
 	p.pos = 0
 
+	mlex := lexer{input: text}
+
+	fmt.Printf("%#U --- \n", mlex.next())
+
 	for {
 
 		fmt.Println("len ", len(text))
@@ -35,6 +39,7 @@ func (p *Lex) Start(text string) {
 		}
 		fmt.Printf("%#U starts at byte position... %d\n", rune, w)
 		p.pos++
+		break
 		if p.pos >= len(p.text) {
 			break
 		}
@@ -53,7 +58,10 @@ func (p *Lex) isDelimeter(s rune) bool {
 	return false
 }
 
-func (l *lexer) next() rune {
+func (l *lexer) 
+
+
+next() rune {
 	if int(l.pos) >= len(l.input) {
 		l.atEOF = true
 		return eof
