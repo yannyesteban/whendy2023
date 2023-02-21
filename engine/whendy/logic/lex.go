@@ -58,10 +58,7 @@ func (p *Lex) isDelimeter(s rune) bool {
 	return false
 }
 
-func (l *lexer) 
-
-
-next() rune {
+func (l *lexer) next() rune {
 	if int(l.pos) >= len(l.input) {
 		l.atEOF = true
 		return eof
