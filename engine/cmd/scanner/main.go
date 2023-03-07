@@ -8,7 +8,7 @@ import (
 
 func main() {
 	// src is the input that we want to tokenize.
-	src := []byte("cos(x) + 1i*sin(x) \n a:=((9+3)+2) // Euler")
+	src := []byte(`123456789`)
 
 	// Initialize the scanner.
 	var s scanner.Scanner
