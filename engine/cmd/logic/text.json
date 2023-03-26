@@ -1,13 +1,34 @@
 [
     {
         "name": "test",
+        "a":5,
         "enable": true,
         "file": "{@MAIN_PATH}php/test8.php",
         "class": "<: @a +2 :>",
         "class2": "<: @if(@a+2>5) {yanny} :>",
-        "a":[
+        "ab":[
             "{@(4+5)} @(yanny+esteban+.5)",
-            "yanny {@x} {: @a + 5 :}"
+            "yanny {@x} {: @a + 5 :}",
+            "@a+1 -> 6;5+5 ->10; `a`+1 ->a1   ",
+            "php/id=(: a+1 :)",
+            "php/@if(5>4){uno}{3+5}",
+            "php/{: @a+1 :}",  "php/6",
+            "php/{: if(5>6){3+6}else{9+9} :}", "php/18",
+            "php/{: case(6)when(1){777}when(2){'@ses'+1}else{123} :}","php/123",
+            "{: for('i', 10, 0, -3){i} :}",
+            "{: define('j', '45');each('i', @array){i+'yanny'} :}",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
         ]
     },
     {
