@@ -17,7 +17,7 @@
             "php/{: case(6)when(1){777}when(2){'@ses'+1}else{123} :}","php/123",
             "{: for('i', 10, 0, -3){i} :}",
             "{: define('j', '45');each('i', @array){i+'yanny'} :}",
-            "",
+            "x",
             "",
             "",
             "",
