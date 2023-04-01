@@ -17,6 +17,38 @@ func (Lex) Test() {
 
 	println("lex test")
 }
+func (p *Lex) Main(text string) {
+	mlex := lexer{input: text}
+
+	for {
+		f := mlex.next()
+
+		if f == eof {
+			fmt.Println("bad")
+			break
+		}
+
+		//fmt.Printf("%#U starts at byte position %d\n", f, 0)
+
+		if f == '@' {
+			g := mlex.peekBack()
+			fmt.Printf("peekBack %c\n", g)
+			if g >= 'a' && g <= 'z' || g >= 'A' && g <= 'Z' || g == '_' || g >= '0' && g <= '9' {
+
+				fmt.Println("correo")
+			}
+
+		}
+	}
+
+}
+
+func (p *Lex) scanIdentifier() {
+
+	for rdOffset, b := range p.[s.rdOffset:] {
+
+	}
+}
 
 func (p *Lex) Start(text string) {
 
@@ -92,6 +124,16 @@ type lexer struct {
 func (l *lexer) peek() rune {
 	r := l.next()
 	l.backup()
+	return r
+}
+
+func (l *lexer) peekBack() rune {
+	if int(l.pos) == 0 {
+
+		return 0
+	}
+	r, _ := utf8.DecodeRuneInString(l.input[l.pos-2:])
+
 	return r
 }
 

@@ -9,7 +9,8 @@ import (
 func main() {
 
 	ll := logic.Lex{}
-	ll.Start(LoadFile("texto.txt"))
+	//ll.Start(LoadFile("texto.txt"))
+	ll.Main(LoadFile("texto.txt"))
 
 }
 
