@@ -8,6 +8,14 @@ import (
 
 func main() {
 
+	ll := logic.Vars{}
+	ll.Init(LoadFile("texto.txt"))
+	//ll.Start(LoadFile("texto.txt"))
+	ll.Eval()
+
+}
+func Mmain2() {
+
 	ll := logic.Lex{}
 	//ll.Start(LoadFile("texto.txt"))
 	ll.Main(LoadFile("texto.txt"))
