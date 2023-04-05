@@ -32,7 +32,7 @@ func (vars *Vars) Eval() {
 		f := vars.next()
 
 		if f == eof {
-			fmt.Println("bad")
+			fmt.Println("bad1")
 			break
 		}
 
