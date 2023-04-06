@@ -7,29 +7,29 @@ import (
 
 const eof = -1
 
-type Vars struct {
-	name       string // the name of the input; used only for error reports
-	input      string // the string being scanned
-	leftDelim  string // start of action marker
-	rightDelim string // end of action marker
-	pos        int    // current position in the input
-	start      int    // start position of this item
-	atEOF      bool   // we have hit the end of input and returned eof
-	parenDepth int    // nesting depth of ( ) exprs
-	line       int    // 1+number of newlines seen
-	startLine  int    // start line of this item
-	//item         item   // item to return to parser
-	insideAction bool // are we inside an action?
-	//options      lexOptions
-	maps map[string]interface{}
+type Data struct {
+	token string
+	data  map[string]interface{}
 }
 
-func (vars *Vars) SetMaps(pref string, data map[string]interface{}) {
+type Vars struct {
+	input string // the string being scanned
+	pos   int    // current position in the input
+
+	data []Data
+}
+
+func (vars *Vars) SetMap(pref string, data map[string]interface{}) {
+	vars.data = append(vars.data, Data{token: pref, data: data})
 
 }
 
 func (vars *Vars) Init(input string) {
 	vars.input = input
+}
+
+func (vars *Vars) ValidToken() {
+
 }
 
 func (vars *Vars) Eval() {
