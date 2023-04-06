@@ -11,10 +11,12 @@ func main() {
 	lg := logic.Vars{}
 	lg.Init(LoadFile("texto.txt"))
 	//ll.Start(LoadFile("texto.txt"))
-	lg.SetMap('@', map)
+	data := map[string]interface{}{
+
+		"mode": "update",
+	}
+	lg.SetMap("@", data)
 	lg.Eval()
-
-
 
 }
 func Mmain2() {
