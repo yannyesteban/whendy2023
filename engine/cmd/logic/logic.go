@@ -8,10 +8,13 @@ import (
 
 func main() {
 
-	ll := logic.Vars{}
-	ll.Init(LoadFile("texto.txt"))
+	lg := logic.Vars{}
+	lg.Init(LoadFile("texto.txt"))
 	//ll.Start(LoadFile("texto.txt"))
-	ll.Eval()
+	lg.SetMap('@', map)
+	lg.Eval()
+
+
 
 }
 func Mmain2() {

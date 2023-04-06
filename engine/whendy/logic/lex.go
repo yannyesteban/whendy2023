@@ -21,6 +21,11 @@ type Vars struct {
 	//item         item   // item to return to parser
 	insideAction bool // are we inside an action?
 	//options      lexOptions
+	maps map[string]interface{}
+}
+
+func (vars *Vars) SetMaps(pref string, data map[string]interface{}) {
+
 }
 
 func (vars *Vars) Init(input string) {
