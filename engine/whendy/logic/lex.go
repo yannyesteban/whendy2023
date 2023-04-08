@@ -17,7 +17,7 @@ const eof = -1
 
 type Data struct {
 	token string
-	data  map[string]interface{}
+	data  map[string]string
 }
 
 type Vars struct {
@@ -30,10 +30,9 @@ type Vars struct {
 	start int
 }
 
-func (vars *Vars) SetMap(pref string, data map[string]interface{}) {
+func (vars *Vars) SetMap(pref string, data map[string]string) {
 	vars.data = append(vars.data, Data{token: pref, data: data})
 	vars.start = 0
-
 }
 
 func (vars *Vars) Init(input string) {
@@ -41,61 +40,96 @@ func (vars *Vars) Init(input string) {
 }
 
 func (vars *Vars) scanIdentifier() string {
+
 	off := vars.start
-	for rdOffset, b := range vars.input[vars.pos:] {
-		vars.pos = rdOffset
-		fmt.Println("..", off, b)
+	for rdOffset, b := range vars.input[off:] {
+
+		if 'a' <= b && b <= 'z' || 'A' <= b && b <= 'Z' || b == '_' || '0' <= b && b <= '9' {
+			continue
+		}
+
+		vars.pos += rdOffset
+
+		vars.start = off + rdOffset
+
+		vars.ch = rune(b)
+		break
 	}
-	return ""
+
+	return vars.input[off:vars.start]
 }
 
-func (vars *Vars) isDataToken() bool {
+func (vars *Vars) replace(value string, pos int, length int) {
 
-	for index, v := range vars.data {
-		sub := vars.input[vars.start : vars.start+len(v.token)]
-		if sub == v.token {
+	vars.input = vars.input[:pos] + value + vars.input[pos+length:]
+	vars.start = pos + len(value)
+	vars.pos = pos + len(value) + 1
+
+}
+
+func (vars *Vars) isDataToken() (string, string, string) {
+
+	for _, data := range vars.data {
+		sub := vars.input[vars.start : vars.start+len(data.token)]
+
+		vars.pos = vars.start + len(data.token)
+
+		if sub == data.token {
 
 			vars.next()
 			rune := vars.ch
 			if isLetter(rune) {
 				lit := vars.scanIdentifier()
 
-				fmt.Println("si", vars.ch, lit)
+				if val, ok := data.data[lit]; ok {
+					return lit, val, data.token
+				}
+				return "", "", ""
+
 			}
 
 		}
-		fmt.Println(vars.ch, index, v.token, len(v.token), vars.input[vars.start:vars.start+len(v.token)])
-
 	}
-	return false
+	return "", "", ""
 }
 
-func (vars *Vars) Eval() {
+func (vars *Vars) Eval() string {
 	for {
 		vars.next()
 
 		if vars.atEOF {
-			fmt.Println("bad")
 			break
 		}
 
-		//fmt.Printf("%#U starts at byte position %d\n", f, 0)
-
 		if vars.ch == '{' {
+
+			peek := vars.peek()
+
+			if peek != '@' && peek != '#' && peek != '$' && peek != '%' && peek != '&' {
+				continue
+			}
+
+			//fmt.Printf("%s starts at byte position %d\n", string(vars.ch), vars.start)
+			pos := vars.start
 			vars.next()
 
-			if vars.isDataToken() {
+			peek = vars.peek()
 
+			if peek == '!' {
+				vars.replace("", pos+2, 1)
+				continue
 			}
-			/*
-				fmt.Printf("peekBack %c\n", g)
-				if g >= 'a' && g <= 'z' || g >= 'A' && g <= 'Z' || g == '_' || g >= '0' && g <= '9' {
 
-					fmt.Println("correo")
-				}
-			*/
+			ident, value, token := vars.isDataToken()
+
+			if token != "" && vars.ch == '}' {
+				vars.replace(value, pos, len(ident)+2+len(token))
+			}
+
 		}
 	}
+
+	return vars.input
 
 }
 
@@ -115,9 +149,10 @@ func (vars *Vars) next() rune {
 }
 
 func (vars *Vars) peek() rune {
-	r := vars.next()
-	vars.backup()
-	return r
+	if vars.pos < len(vars.input) {
+		return rune(vars.input[vars.pos])
+	}
+	return 0
 }
 
 func (vars *Vars) backup() {

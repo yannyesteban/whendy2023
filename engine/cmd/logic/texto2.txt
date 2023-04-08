@@ -1,0 +1,5 @@
+mamá {&EX_apellido} primero{@esteban}segundo{@yanny}tercero : {@esteban} 78 {{@esteban} } {@!!esteban} 
+
+Nombre: {@yanny} {@age} {@age } {@age}
+
+{@apellido} ---{&EX_apellido}***
