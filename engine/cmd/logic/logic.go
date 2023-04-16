@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"sevian.com/whendy/logic"
@@ -9,14 +10,37 @@ import (
 func main() {
 
 	lg := logic.Vars{}
-	lg.Init(LoadFile("texto.txt"))
+	lg.Init(LoadFile("texto2.txt"))
 	//ll.Start(LoadFile("texto.txt"))
-	data := map[string]interface{}{
+	data := map[string]string{
 
-		"mode": "update",
+		"mode":     "update",
+		"esteban":  "JIMENEZ",
+		"yanny":    "NUñEZ",
+		"apellido": "NEVER",
+		"age":      "47",
 	}
 	lg.SetMap("@", data)
-	lg.Eval()
+
+	lg.SetMap("&EX_", map[string]string{
+
+		"apellido": "lopez",
+	})
+	fmt.Println(lg.Eval())
+
+	text := []logic.Item{
+		{Typ: 1, Pos: 1, Val: "8", Line: 1},
+		{Typ: 2, Pos: 1, Val: "+", Line: 1},
+		{Typ: 1, Pos: 1, Val: "4", Line: 1},
+	}
+
+	fmt.Println(text[0].Val)
+
+	s := logic.Smarty{}
+
+	s.Init()
+
+	s.Eval()
 
 }
 func Mmain2() {
