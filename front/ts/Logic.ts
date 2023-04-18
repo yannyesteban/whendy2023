@@ -199,6 +199,24 @@ let data: item[] = [
     {
         type: expType.number,
         value: 3,
+    },
+    {
+        type: expType.opmul,
+        value: "*",
+        priority : 2,
+    },
+    {
+        type: expType.number,
+        value: 5,
+    },
+    {
+        type: expType.opsum,
+        value: "+",
+        priority : 1,
+    },
+    {
+        type: expType.number,
+        value: 6,
     }
 ];
 /*
