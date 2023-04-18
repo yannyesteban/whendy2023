@@ -5,6 +5,7 @@ var expType;
     expType[expType["opdel"] = 3] = "opdel";
     expType[expType["opmul"] = 4] = "opmul";
     expType[expType["opdiv"] = 5] = "opdiv";
+    expType[expType["oppow"] = 6] = "oppow";
 })(expType || (expType = {}));
 class Tree {
     constructor(data) {
@@ -59,27 +60,61 @@ class Tree {
                 }
                 console.log(this.item);
                 const nextItem = this.peek();
-                if (nextItem !== null && (nextItem.type == expType.opsum || nextItem.type == expType.opmul)) {
-                    if (nextItem.priority > priority) {
-                        console.log(777, nextItem.priority);
-                        value = this.evalExp(++level, nextItem.priority);
-                        console.log(` VALUE < ${value}>`);
-                        result = resolve(result, value, mode);
+                if (nextItem) {
+                    if (nextItem.toRight) {
+                        console.log("POWER", nextItem.priority, priority);
+                        if (nextItem.priority >= priority) {
+                            value = this.evalExp(++level, nextItem.priority);
+                            result = resolve(result, value, mode);
+                        }
+                        else {
+                            //result = resolve(result, item.value, mode)
+                        }
                     }
-                    else {
-                        console.log(888);
-                        result = resolve(result, item.value, mode);
+                    if (nextItem.type == expType.opsum || nextItem.type == expType.opmul) {
+                        if (nextItem.priority > priority) {
+                            console.log(777, nextItem.priority);
+                            value = this.evalExp(++level, nextItem.priority);
+                            console.log(` VALUE < ${value}>`);
+                            result = resolve(result, value, mode);
+                        }
+                        else {
+                            console.log(888);
+                            result = resolve(result, item.value, mode);
+                        }
                     }
                 }
                 else {
                     console.log(999, result, item.value, mode);
                     result = resolve(result, item.value, mode);
                 }
+                /*
+                if (nextItem !== null && (nextItem.type == expType.opsum || nextItem.type == expType.opmul)) {
+                    if (nextItem.priority > priority) {
+                        console.log(777, nextItem.priority)
+
+                        value = this.evalExp(++level, nextItem.priority)
+
+                        console.log(` VALUE < ${value}>`)
+                        result = resolve(result, value, mode)
+                    } else {
+                        console.log(888)
+                        result = resolve(result, item.value, mode)
+                    }
+
+
+                } else {
+                    console.log(999, result, item.value, mode)
+                    result = resolve(result, item.value, mode)
+                }
+
+
                 if (mode == 1) {
                     //result = sumPar(result, item.value);
                 }
+                */
             }
-            if (item.type == expType.opsum || item.type == expType.opmul) {
+            if (item.type == expType.opsum || item.type == expType.opmul || item.type == expType.oppow) {
                 mode = item.type;
                 priority = item.priority;
                 console.log("Priority ", priority);
@@ -98,6 +133,8 @@ function resolve(a, b, op) {
             return sumPar(a, b);
         case expType.opmul:
             return mulPar(a, b);
+        case expType.oppow:
+            return powPar(a, b);
     }
 }
 function sumPar(a, b) {
@@ -111,6 +148,9 @@ const mulPar = (a, b) => {
 };
 const divPar = (a, b) => {
     return a / b;
+};
+const powPar = (a, b) => {
+    return Math.pow(a, b);
 };
 let data = [
     {
@@ -163,25 +203,43 @@ let data = [
         value: 6,
     }
 ];
-/*
 data = [
     {
         type: expType.number,
-        value: 4,
+        value: 2,
     },
     {
-        type: expType.opmul,
-        value: "*",
-        priority: 2,
+        type: expType.oppow,
+        value: "^",
+        priority: 3,
+        toRight: true,
     },
     {
         type: expType.number,
         value: 2,
     },
+    {
+        type: expType.oppow,
+        value: "^",
+        priority: 3,
+        toRight: true,
+    },
+    {
+        type: expType.number,
+        value: 3,
+    },
+    {
+        type: expType.opsum,
+        value: "+",
+        priority: 1,
+    },
+    {
+        type: expType.number,
+        value: 4,
+    }
 ];
-
-*/
 const tree = new Tree(data);
 tree.next();
 console.log(` RESULT << ${tree.decode()} >>`);
+//https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/Operator_precedence
 //# sourceMappingURL=Logic.js.map

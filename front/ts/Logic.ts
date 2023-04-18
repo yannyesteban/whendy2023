@@ -4,13 +4,14 @@ enum expType {
     opdel,
     opmul,
     opdiv,
-
+    oppow,
 }
 
 interface item {
-    type: expType.number | expType.opsum | expType.opmul | expType.opdiv,
+    type: expType.number | expType.opsum | expType.opmul | expType.opdiv | expType.oppow,
     value: any,
-    priority?: number
+    priority?: number,
+    toRight?: boolean
 }
 
 
@@ -84,6 +85,38 @@ class Tree {
                 console.log(this.item)
                 const nextItem = this.peek();
 
+                if(nextItem){
+
+                    if(nextItem.toRight){
+                        console.log("POWER", nextItem.priority , priority)
+                        if(nextItem.priority >= priority){
+                            value = this.evalExp(++level, nextItem.priority);
+                            result = resolve(result, value, mode)
+
+                        }else{
+                            //result = resolve(result, item.value, mode)
+                        }
+                    }
+
+                    if(nextItem.type == expType.opsum || nextItem.type == expType.opmul){
+                        if (nextItem.priority > priority) {
+                            console.log(777, nextItem.priority)
+    
+                            value = this.evalExp(++level, nextItem.priority)
+    
+                            console.log(` VALUE < ${value}>`)
+                            result = resolve(result, value, mode)
+                        } else {
+                            console.log(888)
+                            result = resolve(result, item.value, mode)
+                        }
+                    }
+
+                }else {
+                    console.log(999, result, item.value, mode)
+                    result = resolve(result, item.value, mode)
+                }
+                /*
                 if (nextItem !== null && (nextItem.type == expType.opsum || nextItem.type == expType.opmul)) {
                     if (nextItem.priority > priority) {
                         console.log(777, nextItem.priority)
@@ -107,9 +140,10 @@ class Tree {
                 if (mode == 1) {
                     //result = sumPar(result, item.value);
                 }
+                */
             }
 
-            if (item.type == expType.opsum || item.type == expType.opmul) {
+            if (item.type == expType.opsum || item.type == expType.opmul || item.type == expType.oppow) {
 
                 mode = item.type;
                 priority = item.priority;
@@ -136,13 +170,16 @@ class Tree {
 
 
 function resolve(a, b, op) {
-
+    
     switch (op) {
+
         case expType.opsum:
             return sumPar(a, b);
 
         case expType.opmul:
             return mulPar(a, b);
+        case expType.oppow:
+            return powPar(a, b);
     }
 
 }
@@ -165,6 +202,12 @@ const mulPar = (a, b) => {
 
 const divPar = (a, b) => {
     return a / b
+
+}
+
+const powPar = (a, b) => {
+    
+    return a ** b
 
 }
 
@@ -219,27 +262,48 @@ let data: item[] = [
         value: 6,
     }
 ];
-/*
+
 data = [
     {
         type: expType.number,
-        value: 4,
+        value: 2,
     },
     {
-        type: expType.opmul,
-        value: "*",
-        priority: 2,
+            type: expType.oppow,
+            value: "^",
+            priority: 3,
+            toRight: true,
     },
     {
         type: expType.number,
         value: 2,
     },
+    {
+            type: expType.oppow,
+            value: "^",
+            priority: 3,
+            toRight: true,
+    },
+    {
+        type: expType.number,
+        value: 3,
+    },
+    {
+        type: expType.opsum,
+        value: "+",
+        priority : 1,
+    },
+    {
+        type: expType.number,
+        value: 4,
+    }
 ];
 
-*/
+
 
 const tree = new Tree(data);
 
 tree.next()
 
 console.log(` RESULT << ${tree.decode()} >>`)
+//https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/Operator_precedence
