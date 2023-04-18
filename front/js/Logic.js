@@ -27,17 +27,26 @@ class Tree {
             this.eof = true;
         }
     }
+    back() {
+        this.item = this.root[this.pos - 1];
+        this.value = this.root[this.pos - 1].value;
+        this.typ = this.root[this.pos - 1].type;
+        this.pos--;
+    }
     peek() {
         if ((this.pos) < this.root.length) {
             return this.root[this.pos];
         }
         return null;
     }
-    evalExp(level) {
+    evalExp(level, priority) {
+        console.log("*****");
+        //console.log("-----", [this.value, ...arguments])
         let result = null;
         let mode = null;
+        let value;
         while (true) {
-            this.next();
+            console.log("Value", this.value);
             if (this.eof) {
                 break;
             }
@@ -45,26 +54,50 @@ class Tree {
             if (item.type == expType.number) {
                 if (result === null) {
                     result = item.value;
+                    this.next();
                     continue;
                 }
+                console.log(this.item);
                 const nextItem = this.peek();
-                if (nextItem && nextItem.type == expType.opsum || nextItem.type == expType.opmul) {
-                    if (nextItem.l = )
-                        ;
+                if (nextItem !== null && (nextItem.type == expType.opsum || nextItem.type == expType.opmul)) {
+                    if (nextItem.priority > priority) {
+                        console.log(777, nextItem.priority);
+                        value = this.evalExp(++level, nextItem.priority);
+                        console.log(` VALUE < ${value}>`);
+                        result = resolve(result, value, mode);
+                    }
+                    else {
+                        console.log(888);
+                        result = resolve(result, item.value, mode);
+                    }
+                }
+                else {
+                    console.log(999, result, item.value, mode);
+                    result = resolve(result, item.value, mode);
                 }
                 if (mode == 1) {
-                    result = sumPar(result, item.value);
+                    //result = sumPar(result, item.value);
                 }
             }
             if (item.type == expType.opsum || item.type == expType.opmul) {
-                mode = 1;
-                continue;
+                mode = item.type;
+                priority = item.priority;
+                console.log("Priority ", priority);
             }
+            this.next();
         }
         return result;
     }
     decode() {
-        return this.evalExp(0);
+        return this.evalExp(0, 1);
+    }
+}
+function resolve(a, b, op) {
+    switch (op) {
+        case expType.opsum:
+            return sumPar(a, b);
+        case expType.opmul:
+            return mulPar(a, b);
     }
 }
 function sumPar(a, b) {
@@ -79,10 +112,10 @@ const mulPar = (a, b) => {
 const divPar = (a, b) => {
     return a / b;
 };
-const data = [
+let data = [
     {
         type: expType.number,
-        value: 5,
+        value: 4,
     },
     {
         type: expType.opsum,
@@ -91,7 +124,16 @@ const data = [
     },
     {
         type: expType.number,
-        value: 9,
+        value: 1,
+    },
+    {
+        type: expType.opsum,
+        value: "+",
+        priority: 1,
+    },
+    {
+        type: expType.number,
+        value: 2,
     },
     {
         type: expType.opmul,
@@ -103,6 +145,25 @@ const data = [
         value: 3,
     }
 ];
+/*
+data = [
+    {
+        type: expType.number,
+        value: 4,
+    },
+    {
+        type: expType.opmul,
+        value: "*",
+        priority: 2,
+    },
+    {
+        type: expType.number,
+        value: 2,
+    },
+];
+
+*/
 const tree = new Tree(data);
-console.log("logica", tree.decode());
+tree.next();
+console.log(` RESULT << ${tree.decode()} >>`);
 //# sourceMappingURL=Logic.js.map
