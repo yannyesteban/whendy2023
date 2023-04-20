@@ -225,6 +225,14 @@ class Tree {
                 if(peek){
                     console.log("Priority ", peek.priority , priority)
 
+                    if(peek.toRight){
+                        if (peek.priority >= priority) {
+                            console.log("Exp Parcial 11.", partial)
+                            value = this.evalExp(++level);
+                            console.log("Exp Parcial 22.", value)
+                        }
+                    }else
+
                     if (peek.priority > priority) {
                         
                         console.log("Exp Parcial 1.", partial)
@@ -293,11 +301,20 @@ function resolve(a, b, op) {
 }
 
 
-const calc = "4+5*3*2+1";
+const calc = "1+2+3+5^2+3+2*3+2";//6+25+3+6+2
 
 const tree = new Tree(sep(calc));
 
 tree.next()
 
 console.log(calc,` RESULT << ${tree.decode()} >>`)
+
+
+
+function start(str){
+    const tree = new Tree(sep(str));
+
+    tree.next();
+    return str+": "+tree.decode();
+}
 //https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/Operator_precedence
