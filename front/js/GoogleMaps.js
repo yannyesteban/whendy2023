@@ -295,7 +295,7 @@ class GoogleMark extends HTMLElement {
     }
 }
 customElements.define("google-mark", GoogleMark);
-class GoogleMaps extends HTMLElement {
+export class GoogleMaps extends HTMLElement {
     static loadApiFile() {
         return new Promise((resolve, reject) => {
             const key = "AIzaSyBhPsH8OjHCypjgwt_Dl7A_W8wlBbyPink";
@@ -475,6 +475,5 @@ class GoogleMaps extends HTMLElement {
 }
 _GoogleMaps_config = new WeakMap(), _GoogleMaps_map = new WeakMap();
 GoogleMaps.scriptLoaded = false;
-export { GoogleMaps };
 customElements.define("google-maps", GoogleMaps);
 //# sourceMappingURL=GoogleMaps.js.map

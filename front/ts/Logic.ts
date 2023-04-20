@@ -15,6 +15,50 @@ interface item {
 }
 
 
+function sep(str){
+    const items:item[] = [];
+    for (let chr of str) {
+        if(chr == " "){
+            continue;
+        }
+        if(chr >="0" && chr<="9"){
+            items.push({
+                type:expType.number,
+                value:+chr
+            })
+        }
+        if(chr =="+"){
+            items.push({
+                type:expType.opsum,
+                priority:1,
+                value:chr
+            })
+        }
+        if(chr =="*"){
+            items.push({
+                type:expType.opmul,
+                priority:2,
+                value:chr,
+               
+            })
+        }
+        if(chr =="^"){
+            items.push({
+                type:expType.oppow,
+                priority:3,
+                value:chr,
+                toRight:true,
+                
+
+            })
+        }
+        
+    }
+    return items
+
+}
+
+
 
 class Tree {
     public root: item[];
@@ -33,6 +77,7 @@ class Tree {
     }
 
     next() {
+        console.log('NEXT...')
         if (this.pos < this.root.length) {
 
             this.value = this.root[this.pos].value;
@@ -42,6 +87,8 @@ class Tree {
             this.pos++;
         } else {
             this.eof = true;
+            this.value = null;
+            this.typ = null;
         }
 
     }
@@ -59,95 +106,83 @@ class Tree {
         return null
     }
 
-    evalExp(level: number, priority: number) {
-        console.log("*****")
+    evalExp2(level: number, priority: number) {
+        
         //console.log("-----", [this.value, ...arguments])
         let result = null;
         let mode = null;
         let value;
         while (true) {
 
-            console.log("Value", this.value)
-
             if (this.eof) {
                 break;
             }
-
+            console.log("Value", this.value)
 
             let item = this.item;
             if (item.type == expType.number) {
+                //console.log("Number .--->", item.value)
                 if (result === null) {
                     result = item.value;
                     
                     this.next()
                     continue;
                 }
-                console.log(this.item)
+                //console.log(this.item)
                 const nextItem = this.peek();
 
                 if(nextItem){
 
+                    if(nextItem.priority < priority){
+                        console.log("Partial ", result)
+                        return result
+                    }
+
+                    console.log("TYPE: ", item.type)
                     if(nextItem.toRight){
                         console.log("POWER", nextItem.priority , priority)
                         if(nextItem.priority >= priority){
                             value = this.evalExp(++level, nextItem.priority);
+                            console.log(` VALUE < ${value}>`)
                             result = resolve(result, value, mode)
 
                         }else{
+
                             //result = resolve(result, item.value, mode)
                         }
+                        
                     }
+
+                    
+                    
 
                     if(nextItem.type == expType.opsum || nextItem.type == expType.opmul){
                         if (nextItem.priority > priority) {
-                            console.log(777, nextItem.priority)
+                            //console.log(777, nextItem.priority)
     
                             value = this.evalExp(++level, nextItem.priority)
     
                             console.log(` VALUE < ${value}>`)
                             result = resolve(result, value, mode)
                         } else {
-                            console.log(888)
+                            //console.log("que ", result, item.value, mode)
                             result = resolve(result, item.value, mode)
                         }
                     }
 
                 }else {
-                    console.log(999, result, item.value, mode)
+                    //console.log(999, result, item.value, mode)
                     result = resolve(result, item.value, mode)
                 }
-                /*
-                if (nextItem !== null && (nextItem.type == expType.opsum || nextItem.type == expType.opmul)) {
-                    if (nextItem.priority > priority) {
-                        console.log(777, nextItem.priority)
-
-                        value = this.evalExp(++level, nextItem.priority)
-
-                        console.log(` VALUE < ${value}>`)
-                        result = resolve(result, value, mode)
-                    } else {
-                        console.log(888)
-                        result = resolve(result, item.value, mode)
-                    }
-
-
-                } else {
-                    console.log(999, result, item.value, mode)
-                    result = resolve(result, item.value, mode)
-                }
-
-
-                if (mode == 1) {
-                    //result = sumPar(result, item.value);
-                }
-                */
+                
             }
 
+            //console.log(item)
             if (item.type == expType.opsum || item.type == expType.opmul || item.type == expType.oppow) {
 
                 mode = item.type;
                 priority = item.priority;
-                console.log("Priority ", priority)
+                //console.log("Priority ", priority)
 
             }
             this.next()
@@ -159,8 +194,77 @@ class Tree {
 
     }
 
+    evalExp(level){
+        let partial = null;
+        let op = null;
+        let priority = null;
+
+        let value = null
+        while (true) {
+            
+            if (this.eof) {
+                return partial;
+            }
+
+            
+            const item = this.item;
+
+            console.log("Value: ", item.value)
+
+            if(item.type == expType.number){
+
+                if(partial === null){
+                    partial = item.value;
+                    this.next();
+                    continue;
+                    
+                }
+                value = item.value
+                let peek = this.peek();
+
+                if(peek){
+                    console.log("Priority ", peek.priority , priority)
+
+                    if (peek.priority > priority) {
+                        
+                        console.log("Exp Parcial 1.", partial)
+                        value = this.evalExp(++level);
+                        console.log("Exp Parcial 2.", value)
+                        
+                    }
+                    if (peek.priority < priority) {
+                       
+                        if(level>0){
+                            console.log("A: ",partial, item.value, op)
+                            
+                            //this.next()
+                            return resolve(partial, value, op);
+                        }
+                        //let value = item.value
+                        //this.next()
+                        //return resolve(partial, value, op);
+                    }
+                }
+                
+                partial = resolve(partial, value, op);
+                
+            }
+
+            if(item.type >= expType.opsum){
+                op = item.type;
+                priority = item.priority;
+
+            }
+
+            
+            this.next();
+        }
+        
+
+    }
+
     public decode() {
-        return this.evalExp(0, 1)
+        return this.evalExp(0)
 
     }
 }
@@ -170,140 +274,30 @@ class Tree {
 
 
 function resolve(a, b, op) {
+    console.log("resolve ----> ", a, op, b)
     
     switch (op) {
 
         case expType.opsum:
-            return sumPar(a, b);
+            console.log(`[${a} + ${b} = ${a+b}]`)
+            return a + b
 
         case expType.opmul:
-            return mulPar(a, b);
+            console.log(`[${a} * ${b} = ${a*b}]`)
+            return a * b
         case expType.oppow:
-            return powPar(a, b);
+            console.log(`[${a} ** ${b} = ${a**b}]`)
+            return a ** b
     }
 
 }
 
 
-function sumPar(a, b) {
-    return a + +b
+const calc = "4+5*3*2+1";
 
-}
-
-const delPar = (a, b) => {
-    return a - b
-
-}
-
-const mulPar = (a, b) => {
-    return a * b
-
-}
-
-const divPar = (a, b) => {
-    return a / b
-
-}
-
-const powPar = (a, b) => {
-    
-    return a ** b
-
-}
-
-let data: item[] = [
-    {
-        type: expType.number,
-        value: 4,
-    },
-    {
-        type: expType.opsum,
-        value: "+",
-        priority: 1,
-    },
-    {
-        type: expType.number,
-        value: 1,
-    },
-    {
-        type: expType.opsum,
-        value: "+",
-        priority: 1,
-    },
-    {
-        type: expType.number,
-        value: 2,
-    },
-    {
-        type: expType.opmul,
-        value: "*",
-        priority : 2,
-    },
-    {
-        type: expType.number,
-        value: 3,
-    },
-    {
-        type: expType.opmul,
-        value: "*",
-        priority : 2,
-    },
-    {
-        type: expType.number,
-        value: 5,
-    },
-    {
-        type: expType.opsum,
-        value: "+",
-        priority : 1,
-    },
-    {
-        type: expType.number,
-        value: 6,
-    }
-];
-
-data = [
-    {
-        type: expType.number,
-        value: 2,
-    },
-    {
-            type: expType.oppow,
-            value: "^",
-            priority: 3,
-            toRight: true,
-    },
-    {
-        type: expType.number,
-        value: 2,
-    },
-    {
-            type: expType.oppow,
-            value: "^",
-            priority: 3,
-            toRight: true,
-    },
-    {
-        type: expType.number,
-        value: 3,
-    },
-    {
-        type: expType.opsum,
-        value: "+",
-        priority : 1,
-    },
-    {
-        type: expType.number,
-        value: 4,
-    }
-];
-
-
-
-const tree = new Tree(data);
+const tree = new Tree(sep(calc));
 
 tree.next()
 
-console.log(` RESULT << ${tree.decode()} >>`)
+console.log(calc,` RESULT << ${tree.decode()} >>`)
 //https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/Operator_precedence
