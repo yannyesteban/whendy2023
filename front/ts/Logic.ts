@@ -213,33 +213,74 @@ class Tree {
 
             if(item.type == expType.number){
 
+                value = item.value;
+
                 if(partial === null){
-                    partial = item.value;
+                    partial = value;
                     this.next();
                     continue;
                     
                 }
-                value = item.value
+                
+                if(item.type >= expType.opsum){
+                    op = item.type;
+                    priority = item.priority;
+                    this.next();
+                    continue;
+    
+                }
                 let peek = this.peek();
 
+                if(!peek){
+                    partial = resolve(partial, value, op);
+                    this.next();
+                    continue;
+                }
+
+
+                if(peek.priority == priority){
+                    if(peek.toRight){
+
+                    }else{
+                        partial = resolve(partial, value, op);
+                        this.next();
+                        continue;
+                    }
+
+                }
+
                 if(peek){
-                    console.log("Priority ", peek.priority , priority)
 
                     if(peek.toRight){
-                        if (peek.priority >= priority) {
-                            console.log("Exp Parcial 11.", partial)
+                        if(peek.priority >= priority){
                             value = this.evalExp(++level);
-                            console.log("Exp Parcial 22.", value)
+                            partial = resolve(partial, value, op);
+                            this.next();
+                            continue;
                         }
-                    }else
+                        partial = resolve(partial, value, op);
+                        this.next();
+                        continue;
+                    }
+                    
+
+                    if(peek.priority == priority){
+                        partial = resolve(partial, value, op);
+                        this.next();
+                        continue;
+                    }
 
                     if (peek.priority > priority) {
                         
                         console.log("Exp Parcial 1.", partial)
                         value = this.evalExp(++level);
-                        console.log("Exp Parcial 2.", value)
+                        console.log("Exp Parcial 2.", value);
+                        partial = resolve(partial, value, op);
+                        this.next();
+                        continue;
                         
                     }
+
                     if (peek.priority < priority) {
                        
                         if(level>0){
@@ -252,17 +293,19 @@ class Tree {
                         //this.next()
                         //return resolve(partial, value, op);
                     }
+                    
+
+                    
+
+                    
+                    
                 }
                 
                 partial = resolve(partial, value, op);
                 
             }
 
-            if(item.type >= expType.opsum){
-                op = item.type;
-                priority = item.priority;
-
-            }
+            
 
             
             this.next();
@@ -301,7 +344,7 @@ function resolve(a, b, op) {
 }
 
 
-const calc = "1+2+3+5^2+3+2*3+2";//6+25+3+6+2
+const calc = "5+1+2+3+5^2^2+3+2*3+2";//6+25+3+6+2
 
 const tree = new Tree(sep(calc));
 
