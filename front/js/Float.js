@@ -433,7 +433,7 @@ export class Move {
     }
 }
 ;
-class Resize {
+export class Resize {
     constructor(config) {
         this.main = null;
         this.modeX = 0;
@@ -663,5 +663,4 @@ Resize.holders = [
         modeX: 2, modeY: 2
     },
 ];
-export { Resize };
 //# sourceMappingURL=Float.js.map

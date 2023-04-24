@@ -277,7 +277,7 @@ export class Float {
         //e.style.transform = "translate(-50%, -50%)";
     }
 }
-class Drag {
+export class Drag {
     static init(config) {
         const onCapture = config.onCapture || ((config) => { });
         const onDrag = config.onDrag || ((config) => { });
@@ -327,7 +327,6 @@ class Drag {
     }
 }
 Drag.stop = () => { };
-export { Drag };
 export class Move {
     static init(config) {
         const main = config.main;
@@ -387,7 +386,7 @@ export class Move {
     }
 }
 ;
-class Resize {
+export class Resize {
     static init(config) {
         const main = config.main;
         main.style.userSelect = "none";
@@ -603,5 +602,4 @@ Resize.holders = [
         modeX: 2, modeY: 2
     },
 ];
-export { Resize };
 //# sourceMappingURL=FloatOld.js.map

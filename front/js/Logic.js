@@ -156,6 +156,12 @@ class Tree {
             }
             const item = this.item;
             console.log("Value: ", item.value);
+            if (item.type >= expType.opsum) {
+                op = item.type;
+                priority = item.priority;
+                this.next();
+                continue;
+            }
             if (item.type == expType.number) {
                 value = item.value;
                 if (partial === null) {
@@ -163,14 +169,13 @@ class Tree {
                     this.next();
                     continue;
                 }
-                if (item.type >= expType.opsum) {
-                    op = item.type;
-                    priority = item.priority;
-                    this.next();
-                    continue;
-                }
                 let peek = this.peek();
                 if (!peek) {
+                    if (level > 0) {
+                        console.log("A: ", partial, item.value, op);
+                        //this.next()
+                        return resolve(partial, value, op);
+                    }
                     partial = resolve(partial, value, op);
                     this.next();
                     continue;
