@@ -182,7 +182,7 @@ this.panTo();
     }
 }
 customElements.define("google-mark", GoogleMark);
-export class GTMap extends HTMLElement {
+class GTMap extends HTMLElement {
     static loadApiFile() {
         return new Promise((resolve, reject) => {
             const key = "AIzaSyBhPsH8OjHCypjgwt_Dl7A_W8wlBbyPink";
@@ -326,6 +326,7 @@ console.log(ev)
 }
 _GTMap_config = new WeakMap(), _GTMap_map = new WeakMap();
 GTMap.scriptLoaded = false;
+export { GTMap };
 customElements.define("google-map", GTMap);
 window["GTMap"] = GTMap;
 const template = document.createElement("template");
