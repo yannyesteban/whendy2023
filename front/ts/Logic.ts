@@ -351,6 +351,7 @@ class Tree {
             if(item.type >= expType.opsum){
                 levels[level].type = item.type;
                 levels[level].priority = item.priority;
+                levels[level].toRight = item.toRight;
                 this.next();
                 continue;
 
@@ -367,17 +368,50 @@ class Tree {
 
             peek = this.peek();
            
-            if(peek && peek.priority>levels[level].priority){
+            if(peek /*&& !peek.toRight*/ && peek.priority>levels[level].priority){
+
+                console.log("UP Level --->", value)
                 level++;
                 continue;
             }
-            console.log("*****************")
-            if(!peek || peek.priority<levels[level].priority){
-                console.log("<---- priority")
+
+            if(peek && peek.toRight && peek.priority<=levels[level].priority){
+                console.log("UP Level ...>", value)
+                level++;
+                continue;
+            }
+
+            if(!peek || levels[level].toRight && peek.priority > levels[level].priority){
+                
+                "1 + 3^2^3^5 + 2"
+
+                console.log("<... priority",  value)
                 levels[level].value = resolve(levels[level].value, value, levels[level].type);
                 if(levels[level-1]){
-                    console.log("error")
+                    console.log("DOWN Level <...")
                     levels[level-1].value = resolve(levels[level-1].value, levels[level].value, levels[level-1].type)
+                    delete levels[level]
+                    level--;
+                    this.next()
+                    
+                }else{
+                    console.log("BIEN")
+                    this.next()
+                }
+
+                
+                continue;
+
+            }
+
+            
+            if(!peek || peek.priority<levels[level].priority){
+                console.log("<--- priority", value)
+                levels[level].value = resolve(levels[level].value, value, levels[level].type);
+                if(levels[level-1]){
+                    console.log("DOWN Level <---")
+                    levels[level-1].value = resolve(levels[level-1].value, levels[level].value, levels[level-1].type)
+                    delete levels[level]
                     level--;
                     this.next()
                     
@@ -414,7 +448,7 @@ class Tree {
 
 
 function resolve(a, b, op) {
-    console.log("resolve ----> ", a, op, b)
+    console.log("resolve ---> ", a, op, b)
     
     switch (op) {
 
@@ -433,7 +467,7 @@ function resolve(a, b, op) {
 }
 
 
-const calc = "1+2+3 +4*5+1";//6+25+3+6+2
+const calc = "5+1^2^3^1";//6+25+3+6+2
 
 const tree = new Tree(sep(calc));
 
