@@ -55,7 +55,7 @@ class Tree {
         this.root = data;
     }
     next() {
-        console.log('NEXT...');
+        //console.log('NEXT...')
         if (this.pos < this.root.length) {
             this.value = this.root[this.pos].value;
             this.typ = this.root[this.pos].type;
@@ -225,12 +225,54 @@ class Tree {
             this.next();
         }
     }
+    goAhead(item, type, priority) {
+        // 5 + 3 ^ 2 ^ 1 ^ 7
+        let peek = this.peek();
+        console.log("UP AHEAD ...>", item);
+        let values = [];
+        //let priority = null
+        while (true) {
+            console.log(`UP -> { ${this.item.value} }`);
+            if (this.item.type >= expType.opsum) {
+                this.next();
+                continue;
+            }
+            if (this.item.type == expType.number) {
+                values.push(this.item.value);
+            }
+            peek = this.peek();
+            console.log(`UP -> { ${this.item.value} }`, priority, "==", peek.priority);
+            if (priority == peek.priority) {
+                this.next();
+                continue;
+            }
+            break;
+        }
+        for (let i = values.length - 1; i > 0; i--) {
+            console.log("wwww", values[i - 1], values[i], type);
+            values[i - 1] = resolve(values[i - 1], values[i], type);
+        }
+        //values.reduce()
+        console.log(values[0]);
+        return values[0];
+        /*
+        if(!levels[level].partial){
+            levels[level].partial = [];
+        }
+        levels[level].partial.push(value);
+        this.next()
+        continue;
+        */
+    }
     evalTodo() {
         const levels = [];
         let level = 0;
         let value = null;
         let peek = null;
         let index = 0;
+        let toRight = null;
+        let type = null;
+        let priority = null;
         while (true) {
             if (this.eof) {
                 break;
@@ -242,58 +284,48 @@ class Tree {
                 levels[level] = {
                     type: null,
                     value: null,
+                    partial: [],
                 };
             }
             const item = this.item;
+            value = item.value;
+            console.log("Value: ", item.value);
             if (item.type >= expType.opsum) {
                 levels[level].type = item.type;
                 levels[level].priority = item.priority;
                 levels[level].toRight = item.toRight;
+                toRight = item.toRight;
+                type = item.type;
+                priority = item.priority;
                 this.next();
                 continue;
             }
-            value = item.value;
-            console.log("Value: ", item.value);
             if (levels[level].value === null) {
-                levels[level].value = value;
+                levels[level] = item;
                 this.next();
                 continue;
             }
+            console.log("Value 1.0: ", item.value);
             peek = this.peek();
-            if (peek /*&& !peek.toRight*/ && peek.priority > levels[level].priority) {
+            // 5 + 3 ^ 2 ^ 1 ^ 7
+            if (peek && peek.priority > priority && !peek.toRight) {
                 console.log("UP Level --->", value);
                 level++;
                 continue;
             }
-            if (peek && peek.toRight && peek.priority <= levels[level].priority) {
-                console.log("UP Level ...>", value);
-                level++;
-                continue;
+            if (peek && peek.toRight) {
+                value = this.goAhead(item, peek.type, peek.priority);
+                //this.next();
+                //continue;
             }
-            if (!peek || levels[level].toRight && peek.priority > levels[level].priority) {
-                "1 + 3^2^3^5 + 2";
-                console.log("<... priority", value);
-                levels[level].value = resolve(levels[level].value, value, levels[level].type);
-                if (levels[level - 1]) {
-                    console.log("DOWN Level <...");
-                    levels[level - 1].value = resolve(levels[level - 1].value, levels[level].value, levels[level - 1].type);
-                    delete levels[level];
-                    level--;
-                    this.next();
-                }
-                else {
-                    console.log("BIEN");
-                    this.next();
-                }
-                continue;
-            }
+            console.log("Value 2.1: ", item.value);
             if (!peek || peek.priority < levels[level].priority) {
                 console.log("<--- priority", value);
                 levels[level].value = resolve(levels[level].value, value, levels[level].type);
                 if (levels[level - 1]) {
                     console.log("DOWN Level <---");
                     levels[level - 1].value = resolve(levels[level - 1].value, levels[level].value, levels[level - 1].type);
-                    delete levels[level];
+                    levels.pop();
                     level--;
                     this.next();
                 }
@@ -326,7 +358,7 @@ function resolve(a, b, op) {
             return Math.pow(a, b);
     }
 }
-const calc = "5+1^2^3^1"; //6+25+3+6+2
+const calc = "5+3^2^1^7+9*2*2+9"; //6+25+3+6+2
 const tree = new Tree(sep(calc));
 tree.next();
 console.log(calc, ` RESULT << ${tree.decode()} >>`);

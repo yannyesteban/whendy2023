@@ -11,48 +11,49 @@ interface item {
     type: expType.number | expType.opsum | expType.opmul | expType.opdiv | expType.oppow,
     value: any,
     priority?: number,
-    toRight?: boolean
+    toRight?: boolean,
+    partial?:any[],
 }
 
 
-function sep(str){
-    const items:item[] = [];
+function sep(str) {
+    const items: item[] = [];
     for (let chr of str) {
-        if(chr == " "){
+        if (chr == " ") {
             continue;
         }
-        if(chr >="0" && chr<="9"){
+        if (chr >= "0" && chr <= "9") {
             items.push({
-                type:expType.number,
-                value:+chr
+                type: expType.number,
+                value: +chr
             })
         }
-        if(chr =="+"){
+        if (chr == "+") {
             items.push({
-                type:expType.opsum,
-                priority:1,
-                value:chr
+                type: expType.opsum,
+                priority: 1,
+                value: chr
             })
         }
-        if(chr =="*"){
+        if (chr == "*") {
             items.push({
-                type:expType.opmul,
-                priority:2,
-                value:chr,
-               
-            })
-        }
-        if(chr =="^"){
-            items.push({
-                type:expType.oppow,
-                priority:3,
-                value:chr,
-                toRight:true,
-                
+                type: expType.opmul,
+                priority: 2,
+                value: chr,
 
             })
         }
-        
+        if (chr == "^") {
+            items.push({
+                type: expType.oppow,
+                priority: 3,
+                value: chr,
+                toRight: true,
+
+
+            })
+        }
+
     }
     return items
 
@@ -77,7 +78,7 @@ class Tree {
     }
 
     next() {
-        console.log('NEXT...')
+        //console.log('NEXT...')
         if (this.pos < this.root.length) {
 
             this.value = this.root[this.pos].value;
@@ -107,7 +108,7 @@ class Tree {
     }
 
     evalExp2(level: number, priority: number) {
-        
+
         //console.log("-----", [this.value, ...arguments])
         let result = null;
         let mode = null;
@@ -124,44 +125,44 @@ class Tree {
                 //console.log("Number .--->", item.value)
                 if (result === null) {
                     result = item.value;
-                    
+
                     this.next()
                     continue;
                 }
                 //console.log(this.item)
                 const nextItem = this.peek();
 
-                if(nextItem){
+                if (nextItem) {
 
-                    if(nextItem.priority < priority){
+                    if (nextItem.priority < priority) {
                         console.log("Partial ", result)
                         return result
                     }
 
                     console.log("TYPE: ", item.type)
-                    if(nextItem.toRight){
-                        console.log("POWER", nextItem.priority , priority)
-                        if(nextItem.priority >= priority){
+                    if (nextItem.toRight) {
+                        console.log("POWER", nextItem.priority, priority)
+                        if (nextItem.priority >= priority) {
                             value = this.evalExp(++level, nextItem.priority);
                             console.log(` VALUE < ${value}>`)
                             result = resolve(result, value, mode)
 
-                        }else{
+                        } else {
 
                             //result = resolve(result, item.value, mode)
                         }
-                        
+
                     }
 
-                    
-                    
 
-                    if(nextItem.type == expType.opsum || nextItem.type == expType.opmul){
+
+
+                    if (nextItem.type == expType.opsum || nextItem.type == expType.opmul) {
                         if (nextItem.priority > priority) {
                             //console.log(777, nextItem.priority)
-    
+
                             value = this.evalExp(++level, nextItem.priority)
-    
+
                             console.log(` VALUE < ${value}>`)
                             result = resolve(result, value, mode)
                         } else {
@@ -170,11 +171,11 @@ class Tree {
                         }
                     }
 
-                }else {
+                } else {
                     //console.log(999, result, item.value, mode)
                     result = resolve(result, item.value, mode)
                 }
-                
+
             }
 
             //console.log(item)
@@ -194,56 +195,56 @@ class Tree {
 
     }
 
-    evalExp(level){
+    evalExp(level) {
         let partial = null;
         let op = null;
         let priority = null;
 
         let value = null
         while (true) {
-            
+
             if (this.eof) {
                 return partial;
             }
 
             const item = this.item;
 
-            if(item.type >= expType.opsum){
+            if (item.type >= expType.opsum) {
                 op = item.type;
                 priority = item.priority;
                 this.next();
                 continue;
 
             }
-            
-           
+
+
             console.log("Value: ", item.value)
 
-            if(item.type == expType.number){
+            if (item.type == expType.number) {
 
                 value = item.value;
 
-                if(partial === null){
+                if (partial === null) {
                     partial = value;
                     this.next();
                     continue;
-                    
+
                 }
-                
-                
+
+
                 let peek = this.peek();
 
-                if(!peek){
+                if (!peek) {
                     partial = resolve(partial, value, op);
                     this.next();
                     continue;
                 }
 
 
-                if(peek.priority == priority){
-                    if(peek.toRight){
+                if (peek.priority == priority) {
+                    if (peek.toRight) {
 
-                    }else{
+                    } else {
                         partial = resolve(partial, value, op);
                         this.next();
                         continue;
@@ -251,10 +252,10 @@ class Tree {
 
                 }
 
-                if(peek){
+                if (peek) {
 
-                    if(peek.toRight){
-                        if(peek.priority >= priority){
+                    if (peek.toRight) {
+                        if (peek.priority >= priority) {
                             value = this.evalExp(++level);
                             partial = resolve(partial, value, op);
                             this.next();
@@ -264,30 +265,30 @@ class Tree {
                         this.next();
                         continue;
                     }
-                    
 
-                    if(peek.priority == priority){
+
+                    if (peek.priority == priority) {
                         partial = resolve(partial, value, op);
                         this.next();
                         continue;
                     }
 
                     if (peek.priority > priority) {
-                        
+
                         console.log("Exp Parcial 1.", partial)
                         value = this.evalExp(++level);
                         console.log("Exp Parcial 2.", value);
                         partial = resolve(partial, value, op);
                         this.next();
                         continue;
-                        
+
                     }
 
                     if (peek.priority < priority) {
-                       
-                        if(level>0){
-                            console.log("A: ",partial, item.value, op)
-                            
+
+                        if (level > 0) {
+                            console.log("A: ", partial, item.value, op)
+
                             //this.next()
                             return resolve(partial, value, op);
                         }
@@ -295,115 +296,156 @@ class Tree {
                         //this.next()
                         //return resolve(partial, value, op);
                     }
-                    
 
-                    
 
-                    
-                    
+
+
+
+
                 }
-                
+
                 partial = resolve(partial, value, op);
-                
+
             }
 
-            
 
-            
+
+
             this.next();
         }
-        
+
 
     }
 
-    evalTodo(){
-        interface elem {
-            type: expType.number | expType.opsum | expType.opmul | expType.opdiv | expType.oppow,
-            value: any,
-            priority?: number,
-            toRight?: boolean
+    goAhead(item, type, priority){
+        // 5 + 3 ^ 2 ^ 1 ^ 7
+        let peek = this.peek();
+
+       
+        console.log("UP AHEAD ...>", item)
+        let values = [];
+        //let priority = null
+        while(true){
+           
+            console.log(`UP -> { ${this.item.value} }`)
+            if(this.item.type >= expType.opsum){
+                
+                this.next()
+                continue;
+            }
+
+            if(this.item.type == expType.number){
+                values.push(this.item.value)
+
+            }
+            
+            peek = this.peek();
+            console.log(`UP -> { ${this.item.value} }`, priority ,"==", peek.priority)
+            if(priority == peek.priority){
+                this.next()
+                continue;
+            }
+
+
+            break;
         }
 
-        const levels:elem[] = [];
+        for(let i=values.length-1;i>0;i-- ){
+            console.log("wwww", values[i-1], values[i], type)
+            values[i-1] = resolve(values[i-1], values[i], type)    
+        }
+        //values.reduce()
+
+        console.log(values[0])
+
+        return values[0];
+
+        /*
+        if(!levels[level].partial){
+            levels[level].partial = [];
+        }
+        levels[level].partial.push(value);
+        this.next()
+        continue;
+        */
+
+    }
+
+    evalTodo() {
+        
+
+        const levels: item[] = [];
         let level = 0;
         let value = null;
-        let peek:item = null;
-        let index = 0
-        while(true){
+        let peek: item = null;
+        let index = 0;
+        let toRight = null;
+        let type = null;
+        let priority = null;
+        while (true) {
+
             if (this.eof) {
                 break;
             }
 
-            if(index++>=100){
+            if (index++ >= 100) {
                 break;
             }
 
-
-            if(!levels[level]){
+            if (!levels[level]) {
                 levels[level] = {
-                    type:null,
-                    value:null,
+                    type: null,
+                    value: null,
+                    partial: [],
                 }
             }
 
             const item = this.item;
 
-            if(item.type >= expType.opsum){
-                levels[level].type = item.type;
-                levels[level].priority = item.priority;
-                levels[level].toRight = item.toRight;
-                this.next();
-                continue;
-
-            }
-            
             value = item.value;
             console.log("Value: ", item.value)
 
-            if(levels[level].value === null){
-                levels[level].value = value;
+            if (item.type >= expType.opsum) {
+                levels[level].type = item.type;
+                levels[level].priority = item.priority;
+                levels[level].toRight = item.toRight;
+                toRight = item.toRight;
+                type = item.type;
+                priority = item.priority;
+
+                this.next();
+                continue;
+
+            }
+
+            if (levels[level].value === null) {
+                levels[level] = item;
                 this.next();
                 continue;
             }
 
-            peek = this.peek();
-           
-            if(peek /*&& !peek.toRight*/ && peek.priority>levels[level].priority){
+            console.log("Value 1.0: ", item.value)
 
+            peek = this.peek();
+            // 5 + 3 ^ 2 ^ 1 ^ 7
+
+            if (peek && peek.priority > priority  && !peek.toRight) {
                 console.log("UP Level --->", value)
                 level++;
                 continue;
             }
 
-            if(peek && peek.toRight && peek.priority<=levels[level].priority){
-                console.log("UP Level ...>", value)
-                level++;
-                continue;
+            if (peek && peek.toRight) {
+                value = this.goAhead(item, peek.type, peek.priority);
+                //this.next();
+                //continue;
             }
 
-            if(!peek || levels[level].toRight && peek.priority > levels[level].priority){
-                
-                "1 + 3^2^3^5 + 2"
+            
+            console.log("Value 2.1: ", item.value)
 
-                console.log("<... priority",  value)
-                levels[level].value = resolve(levels[level].value, value, levels[level].type);
-                if(levels[level-1]){
-                    console.log("DOWN Level <...")
-                    levels[level-1].value = resolve(levels[level-1].value, levels[level].value, levels[level-1].type)
-                    delete levels[level]
-                    level--;
-                    this.next()
-                    
-                }else{
-                    console.log("BIEN")
-                    this.next()
-                }
-
-                
-                continue;
-
-            }
-
+            
+            
             
             if(!peek || peek.priority<levels[level].priority){
                 console.log("<--- priority", value)
@@ -411,7 +453,7 @@ class Tree {
                 if(levels[level-1]){
                     console.log("DOWN Level <---")
                     levels[level-1].value = resolve(levels[level-1].value, levels[level].value, levels[level-1].type)
-                    delete levels[level]
+                    levels.pop()
                     level--;
                     this.next()
                     
@@ -425,16 +467,12 @@ class Tree {
             }
             
             levels[level].value = resolve(levels[level].value, value, levels[level].type);
-
-
             
-
             this.next();
-
-
 
         }
         console.log(levels)
+
     }
 
     public decode() {
@@ -449,38 +487,38 @@ class Tree {
 
 function resolve(a, b, op) {
     console.log("resolve ---> ", a, op, b)
-    
+
     switch (op) {
 
         case expType.opsum:
-            console.log(`[${a} + ${b} = ${a+b}]`)
+            console.log(`[${a} + ${b} = ${a + b}]`)
             return a + b
 
         case expType.opmul:
-            console.log(`[${a} * ${b} = ${a*b}]`)
+            console.log(`[${a} * ${b} = ${a * b}]`)
             return a * b
         case expType.oppow:
-            console.log(`[${a} ** ${b} = ${a**b}]`)
+            console.log(`[${a} ** ${b} = ${a ** b}]`)
             return a ** b
     }
 
 }
 
 
-const calc = "5+1^2^3^1";//6+25+3+6+2
+const calc = "5+3^2^1^7+9*2*2+9";//6+25+3+6+2
 
 const tree = new Tree(sep(calc));
 
 tree.next()
 
-console.log(calc,` RESULT << ${tree.decode()} >>`)
+console.log(calc, ` RESULT << ${tree.decode()} >>`)
 
 
 
-function start(str){
+function start(str) {
     const tree = new Tree(sep(str));
 
     tree.next();
-    return str+": "+tree.decode();
+    return str + ": " + tree.decode();
 }
 //https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/Operator_precedence
