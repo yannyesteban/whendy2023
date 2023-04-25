@@ -226,13 +226,9 @@ class Tree {
         }
     }
     goAhead(item, type, priority) {
-        // 5 + 3 ^ 2 ^ 1 ^ 7
-        let peek = this.peek();
-        console.log("UP AHEAD ...>", item);
+        let peek = null;
         let values = [];
-        //let priority = null
         while (true) {
-            console.log(`UP -> { ${this.item.value} }`);
             if (this.item.type >= expType.opsum) {
                 this.next();
                 continue;
@@ -241,7 +237,6 @@ class Tree {
                 values.push(this.item.value);
             }
             peek = this.peek();
-            console.log(`UP -> { ${this.item.value} }`, priority, "==", peek.priority);
             if (priority == peek.priority) {
                 this.next();
                 continue;
@@ -249,20 +244,9 @@ class Tree {
             break;
         }
         for (let i = values.length - 1; i > 0; i--) {
-            console.log("wwww", values[i - 1], values[i], type);
             values[i - 1] = resolve(values[i - 1], values[i], type);
         }
-        //values.reduce()
-        console.log(values[0]);
         return values[0];
-        /*
-        if(!levels[level].partial){
-            levels[level].partial = [];
-        }
-        levels[level].partial.push(value);
-        this.next()
-        continue;
-        */
     }
     evalTodo() {
         const levels = [];
