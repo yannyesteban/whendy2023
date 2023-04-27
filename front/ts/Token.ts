@@ -9,9 +9,21 @@ enum tkType {
     ELSE, // "abc"
     CASE, // "abc"
     WHEN, // "abc"
+    WHILE, // "abc"
     DEFAULT, // "abc"
     FOR, // "abc"
     EACH, 
+    LPAREN, // (
+        LBRACK, // [
+        LBRACE, // {
+        COMMA,  // ,
+        PERIOD, // .
+    
+        RPAREN,    // )
+        RBRACK,    // ]
+        RBRACE,    // }
+        SEMICOLON, // ;
+        COLON,     // :
 }
 
 const keywords = {
@@ -19,6 +31,7 @@ const keywords = {
     "ELSE":tkType.ELSE,
     "case":tkType.CASE,
     "when":tkType.WHEN,
+    "while":tkType.WHILE,
     "default":tkType.DEFAULT,
     "for":tkType.FOR,
     "each":tkType.EACH,

@@ -16,6 +16,14 @@ class Lexer {
         console.log(input);
     }
 
+    skipWhitespace() {
+        while(this.ch == ' ' || this.ch == '\t' || this.ch == '\n' || this.ch == '\r') {
+            console.log("[][][]")
+            this.next();
+
+        }
+    }
+
     scanIdentifier(){
         let init = this.pos;
         let end = init;
@@ -56,14 +64,17 @@ class Lexer {
                 this.next();
                 switch (this.ch.toLowerCase()) {
                 case 'x':
-                    this.next()
-                    [base, prefix] = [16, 'x']
+                    this.next();
+                    [base, prefix] = [16, 'x'];
+                    break;
                 case 'o':
-                    this.next()
-                    [base, prefix] = [8, 'o'];
+                    this.next();
+                    ([base, prefix] = [8, 'o']);
+                    break;
                 case 'b':
-                    this.next()
+                    this.next();
                     [base, prefix] = [2, 'b']
+                    break;
                 default:
                     [base, prefix] = [8, '0']
                     //digsep = 1 // leading 0
@@ -80,7 +91,8 @@ class Lexer {
                 //s.error(s.offset, "invalid radix point in "+litname(prefix))
             }
             this.next()
-            //digsep |= s.digits(base, &invalid)
+            this.digits(base)
+            
         }
         /*
         if digsep&1 == 0 {
@@ -131,9 +143,10 @@ class Lexer {
             }
         }
         */
+       lit = this.input.substring(offs-1, this.pos-1)
        console.log("<>",this.input.substring(offs-1, this.pos))
-        return lit
-        //return {tok, lit}
+        //return lit
+        return {lit, tok}
     }
 
     digits(base: number)  {
@@ -158,8 +171,11 @@ class Lexer {
         
         let ch = null;
         let lit = "";
-        let typ:number = null;
+        
+        let tok:number = null;
+        
         while (!this.eof) {
+            this.skipWhitespace();
             ch = this.ch;
             console.log(this.ch)
 
@@ -168,22 +184,46 @@ class Lexer {
                 lit = this.scanIdentifier();
                 console.log(".....", lit)
                 if(lit.length>1){
-                    typ = token.isKeyword(lit);
+                    tok = token.isKeyword(lit);
                 }
                 break;
                 
             }else if(isDecimal(ch) || ch == '.' && isDecimal(this.peek())){
 
-                lit = this.scanNumber()
+
+                ( {lit, tok} = this.scanNumber());
+
+                //console.log("this.scanNumber()", this.scanNumber())
+                //{lit, tok} = this.scanNumber()
+                console.log(lit, tok)
+                break;
+            }else{
+
+                this.next();
+                switch(ch){
+                    case ",":
+                        tok = tkType.COMMA;
+                        lit = ","
+                        break;
+                    case ";":
+                        tok = tkType.SEMICOLON;
+                        lit = ";"
+                        break;                        
+
+                }
+                
+
+
             }
 
             this.next();
+            break;
         }
-
+        console.log(lit, tok)
         return {
             pos: this.pos,
             value: lit,
-            typ
+            tok
         };
 
 
@@ -220,7 +260,12 @@ class Lexer {
 
 }
 
-const source = `while if for while  987.368 if`;
+const source = `while if for while  987.368  5e+3 -24 0xaf01 0b2 if yanny, esteban, hello; wait; test`;
 let lexer = new Lexer(source);
 
 console.log(lexer.getTokens());
+
+`
+if(a>1){"445"}else{"aaa"};a=45;case(a){when(1){ 456}when(2){100}default{3001}}
+
+`

@@ -10,15 +10,27 @@ var tkType;
     tkType[tkType["ELSE"] = 8] = "ELSE";
     tkType[tkType["CASE"] = 9] = "CASE";
     tkType[tkType["WHEN"] = 10] = "WHEN";
-    tkType[tkType["DEFAULT"] = 11] = "DEFAULT";
-    tkType[tkType["FOR"] = 12] = "FOR";
-    tkType[tkType["EACH"] = 13] = "EACH";
+    tkType[tkType["WHILE"] = 11] = "WHILE";
+    tkType[tkType["DEFAULT"] = 12] = "DEFAULT";
+    tkType[tkType["FOR"] = 13] = "FOR";
+    tkType[tkType["EACH"] = 14] = "EACH";
+    tkType[tkType["LPAREN"] = 15] = "LPAREN";
+    tkType[tkType["LBRACK"] = 16] = "LBRACK";
+    tkType[tkType["LBRACE"] = 17] = "LBRACE";
+    tkType[tkType["COMMA"] = 18] = "COMMA";
+    tkType[tkType["PERIOD"] = 19] = "PERIOD";
+    tkType[tkType["RPAREN"] = 20] = "RPAREN";
+    tkType[tkType["RBRACK"] = 21] = "RBRACK";
+    tkType[tkType["RBRACE"] = 22] = "RBRACE";
+    tkType[tkType["SEMICOLON"] = 23] = "SEMICOLON";
+    tkType[tkType["COLON"] = 24] = "COLON";
 })(tkType || (tkType = {}));
 const keywords = {
     "if": tkType.IF,
     "ELSE": tkType.ELSE,
     "case": tkType.CASE,
     "when": tkType.WHEN,
+    "while": tkType.WHILE,
     "default": tkType.DEFAULT,
     "for": tkType.FOR,
     "each": tkType.EACH,
