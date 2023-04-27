@@ -72,7 +72,7 @@ class WHOption extends HTMLElement {
     }
 }
 customElements.define("wh-option", WHOption);
-class ListText extends HTMLElement {
+export class ListText extends HTMLElement {
     static get observedAttributes() {
         return ["group", "filtered", "value", "name"];
     }
@@ -444,6 +444,5 @@ class ListText extends HTMLElement {
     }
 }
 ListText.formAssociated = true;
-export { ListText };
 customElements.define("wh-list-text", ListText);
 //# sourceMappingURL=ListText.js.map

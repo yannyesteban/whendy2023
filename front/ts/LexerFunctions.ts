@@ -1,21 +1,28 @@
-function isLetter(ch){
-
-    if(ch>="a" && ch<="z" || ch>="A" && ch<="Z"){
-        return true;
-    }
-    return false;
+function isLetter(ch) {
+  if ((ch >= "a" && ch <= "z") || (ch >= "A" && ch <= "Z")) {
+    return true;
+  }
+  return false;
 }
 
-function isKey(){
+function isKey() {}
 
-
+function isAlphaNumeric(ch) {
+  if (
+    (ch >= "a" && ch <= "z") ||
+    (ch >= "A" && ch <= "Z") ||
+    (ch >= "0" && ch <= "9") ||
+    ch == "_"
+  ) {
+    return true;
+  }
+  return false;
 }
 
-function isAlphaNumeric(ch){
+function isDecimal(ch: string): boolean {
+  return ch >= "0" && ch <= "9";
+}
 
-    if(ch>="a" && ch<="z" || ch>="A" && ch<="Z" || ch>="0" && ch<="9" || ch=="_"){
-        return true;
-    }
-    return false;
-
+function isHex(ch: string): boolean{ 
+    return '0' <= ch && ch <= '9' || 'a' <= ch.toLowerCase() && ch.toLowerCase() <= 'f';
 }
