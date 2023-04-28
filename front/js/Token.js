@@ -68,12 +68,39 @@ const keywords = {
     for: Token.FOR,
     each: Token.EACH,
 };
+const LowestPrec = 0, // non-operators
+UnaryPrec = 6, HighestPrec = 7;
 class Keyword {
     constructor() { }
     isKeyword(key) {
         var _a;
         return (_a = keywords[key]) !== null && _a !== void 0 ? _a : Token.IDENT;
     }
+    precedence(op) {
+        switch (op) {
+            case Token.OR:
+                return 1;
+            case Token.AND:
+                return 2;
+            case Token.EQL:
+            case Token.NEQ:
+            case Token.LSS:
+            case Token.LEQ:
+            case Token.GTR:
+            case Token.GEQ:
+                return 3;
+            case Token.ADD:
+            case Token.SUB:
+            case Token.OR:
+                return 4;
+            case Token.MUL:
+            case Token.DIV:
+            case Token.MOD:
+            case Token.AND:
+                return 5;
+        }
+        return LowestPrec;
+    }
 }
-console.log(keywords["f"]);
+//console.log(keywords["f"]);
 //# sourceMappingURL=Token.js.map

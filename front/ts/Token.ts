@@ -7,8 +7,8 @@ enum Token {
 	//IMAG,   // 123.45i
 	//CHAR,   // 'a'
 	STRING, // "abc"
-	
-	
+
+
 
 	ADD, // +
 	SUB, // -
@@ -82,16 +82,48 @@ const keywords = {
 	for: Token.FOR,
 	each: Token.EACH,
 
-	
+
 };
+const
+	LowestPrec = 0, // non-operators
+	UnaryPrec = 6,
+	HighestPrec = 7
+	;
 
 class Keyword {
 	constructor() { }
 
-	isKeyword(key) {
+	isKeyword(key: string) {
 		return keywords[key] ?? Token.IDENT;
 	}
-	
+
+	precedence(op: number): number {
+		switch (op) {
+			case Token.OR:
+				return 1
+			case Token.AND:
+				return 2
+			case Token.EQL:
+			case Token.NEQ:
+			case Token.LSS:
+			case Token.LEQ:
+			case Token.GTR:
+			case Token.GEQ:
+				return 3
+			case Token.ADD:
+			case Token.SUB:
+			case Token.OR:
+				return 4
+			case Token.MUL:
+			case Token.DIV:
+			case Token.MOD:
+			case Token.AND:
+				return 5
+		}
+		return LowestPrec
+	}
+
+
 }
 
-console.log(keywords["f"]);
+//console.log(keywords["f"]);

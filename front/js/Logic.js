@@ -342,7 +342,9 @@ function resolve(a, b, op) {
             return Math.pow(a, b);
     }
 }
-const calc = "5+3^2^1^7+9*2*2+9"; //6+25+3+6+2
+const calc = "5+3*2"; //6+25+3+6+2
+let lexer = new Lexer(calc);
+console.log(calc, "\n", lexer.getTokens());
 const tree = new Tree(sep(calc));
 tree.next();
 console.log(calc, ` RESULT << ${tree.decode()} >>`);

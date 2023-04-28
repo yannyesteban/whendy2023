@@ -394,6 +394,7 @@ class Lexer {
         return {
             pos: this.pos,
             value: lit,
+            priority: keyword.precedence(tok),
             tok
         };
     }
@@ -423,13 +424,19 @@ class Lexer {
         return tokens;
     }
 }
+/*
 console.log(Token);
+
 let source = `while if for while  987.368  5e+3 -24 0xaf01 0b2 if yanny, esteban, hello; wait; test 4==5 6=3 2+2 k+=8`;
-source = '"yanny\\n esteban"';
+
+source = '6+6*2 || 2';
 let lexer = new Lexer(source);
+
 console.log(source, "\n", lexer.getTokens());
+
 `
 if(a>1){"445"}else{"aaa"};a=45;case(a){when(1){ 456}when(2){100}default{3001}}
 
-`;
+`
+*/ 
 //# sourceMappingURL=Lexer.js.map
