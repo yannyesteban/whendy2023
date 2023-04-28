@@ -9,10 +9,11 @@ class Lexer {
 
     constructor(input: string) {
         this.input = input;
-        this.pos = 1;
-        this.ch = this.input[0];
-        this.eof = !(this.ch);
+        this.pos = 0;
+        this.ch = " ";
+        this.eof = false;
 
+        this.next()
         console.log(input);
     }
 
@@ -143,8 +144,8 @@ class Lexer {
             }
         }
         */
-       lit = this.input.substring(offs-1, this.pos-1)
-       console.log("<>",this.input.substring(offs-1, this.pos))
+       lit = this.input.substring(offs-1, this.pos)
+       console.log("<>",offs, this.pos," = ",lit)
         //return lit
         return {lit, tok}
     }
@@ -208,7 +209,32 @@ class Lexer {
                     case ";":
                         tok = tkType.SEMICOLON;
                         lit = ";"
-                        break;                        
+                        break;   
+                    case "+":
+                        if(this.ch == "="){
+                            tok = tkType.AND_ASSIGN;
+                            lit = "+="
+                            this.next();
+                            break;
+
+                        }
+                        if(this.ch == ch){
+                            tok = tkType.INC;
+                            lit = "++"
+                            this.next();
+                            break;
+
+                        }
+
+                        tok = tkType.ADD;
+                        
+                    
+                        lit = "+";
+                        break; 
+                    case "=":
+                        tok = tkType.ASSIGN;
+                        lit = "=";   
+                        break;                  
 
                 }
                 
@@ -216,7 +242,7 @@ class Lexer {
 
             }
 
-            this.next();
+            
             break;
         }
         console.log(lit, tok)
@@ -237,6 +263,7 @@ class Lexer {
             this.pos++;
         } else {
             this.eof = true;
+            this.ch = "\0";
         }
 
     }
@@ -260,7 +287,9 @@ class Lexer {
 
 }
 
-const source = `while if for while  987.368  5e+3 -24 0xaf01 0b2 if yanny, esteban, hello; wait; test`;
+let source = `while if for while  987.368  5e+3 -24 0xaf01 0b2 if yanny, esteban, hello; wait; test 4==5 6=3 2+2 k+=8`;
+
+source = `3 5`;
 let lexer = new Lexer(source);
 
 console.log(lexer.getTokens());

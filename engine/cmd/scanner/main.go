@@ -8,7 +8,7 @@ import (
 
 func main() {
 	// src is the input that we want to tokenize.
-	src := []byte("abc\ncd")
+	src := []byte("a+b")
 
 	// Initialize the scanner.
 	var s scanner.Scanner

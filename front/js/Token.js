@@ -14,16 +14,47 @@ var tkType;
     tkType[tkType["DEFAULT"] = 12] = "DEFAULT";
     tkType[tkType["FOR"] = 13] = "FOR";
     tkType[tkType["EACH"] = 14] = "EACH";
-    tkType[tkType["LPAREN"] = 15] = "LPAREN";
-    tkType[tkType["LBRACK"] = 16] = "LBRACK";
-    tkType[tkType["LBRACE"] = 17] = "LBRACE";
-    tkType[tkType["COMMA"] = 18] = "COMMA";
-    tkType[tkType["PERIOD"] = 19] = "PERIOD";
-    tkType[tkType["RPAREN"] = 20] = "RPAREN";
-    tkType[tkType["RBRACK"] = 21] = "RBRACK";
-    tkType[tkType["RBRACE"] = 22] = "RBRACE";
-    tkType[tkType["SEMICOLON"] = 23] = "SEMICOLON";
-    tkType[tkType["COLON"] = 24] = "COLON";
+    tkType[tkType["ADD"] = 15] = "ADD";
+    tkType[tkType["SUB"] = 16] = "SUB";
+    tkType[tkType["MUL"] = 17] = "MUL";
+    tkType[tkType["QUO"] = 18] = "QUO";
+    tkType[tkType["REM"] = 19] = "REM";
+    tkType[tkType["LPAREN"] = 20] = "LPAREN";
+    tkType[tkType["LBRACK"] = 21] = "LBRACK";
+    tkType[tkType["LBRACE"] = 22] = "LBRACE";
+    tkType[tkType["COMMA"] = 23] = "COMMA";
+    tkType[tkType["PERIOD"] = 24] = "PERIOD";
+    tkType[tkType["RPAREN"] = 25] = "RPAREN";
+    tkType[tkType["RBRACK"] = 26] = "RBRACK";
+    tkType[tkType["RBRACE"] = 27] = "RBRACE";
+    tkType[tkType["SEMICOLON"] = 28] = "SEMICOLON";
+    tkType[tkType["COLON"] = 29] = "COLON";
+    tkType[tkType["ADD_ASSIGN"] = 30] = "ADD_ASSIGN";
+    tkType[tkType["SUB_ASSIGN"] = 31] = "SUB_ASSIGN";
+    tkType[tkType["MUL_ASSIGN"] = 32] = "MUL_ASSIGN";
+    tkType[tkType["QUO_ASSIGN"] = 33] = "QUO_ASSIGN";
+    tkType[tkType["REM_ASSIGN"] = 34] = "REM_ASSIGN";
+    tkType[tkType["AND_ASSIGN"] = 35] = "AND_ASSIGN";
+    tkType[tkType["OR_ASSIGN"] = 36] = "OR_ASSIGN";
+    tkType[tkType["XOR_ASSIGN"] = 37] = "XOR_ASSIGN";
+    tkType[tkType["SHL_ASSIGN"] = 38] = "SHL_ASSIGN";
+    tkType[tkType["SHR_ASSIGN"] = 39] = "SHR_ASSIGN";
+    tkType[tkType["AND_NOT_ASSIGN"] = 40] = "AND_NOT_ASSIGN";
+    tkType[tkType["LAND"] = 41] = "LAND";
+    tkType[tkType["LOR"] = 42] = "LOR";
+    tkType[tkType["ARROW"] = 43] = "ARROW";
+    tkType[tkType["INC"] = 44] = "INC";
+    tkType[tkType["DEC"] = 45] = "DEC";
+    tkType[tkType["EQL"] = 46] = "EQL";
+    tkType[tkType["LSS"] = 47] = "LSS";
+    tkType[tkType["GTR"] = 48] = "GTR";
+    tkType[tkType["ASSIGN"] = 49] = "ASSIGN";
+    tkType[tkType["NOT"] = 50] = "NOT";
+    tkType[tkType["NEQ"] = 51] = "NEQ";
+    tkType[tkType["LEQ"] = 52] = "LEQ";
+    tkType[tkType["GEQ"] = 53] = "GEQ";
+    tkType[tkType["DEFINE"] = 54] = "DEFINE";
+    tkType[tkType["ELLIPSIS"] = 55] = "ELLIPSIS";
 })(tkType || (tkType = {}));
 const keywords = {
     "if": tkType.IF,
@@ -34,6 +65,42 @@ const keywords = {
     "default": tkType.DEFAULT,
     "for": tkType.FOR,
     "each": tkType.EACH,
+    ADD_ASSIGN: "+=",
+    SUB_ASSIGN: "-=",
+    MUL_ASSIGN: "*=",
+    QUO_ASSIGN: "/=",
+    REM_ASSIGN: "%=",
+    AND_ASSIGN: "&=",
+    OR_ASSIGN: "|=",
+    XOR_ASSIGN: "^=",
+    SHL_ASSIGN: "<<=",
+    SHR_ASSIGN: ">>=",
+    AND_NOT_ASSIGN: "&^=",
+    LAND: "&&",
+    LOR: "||",
+    ARROW: "<-",
+    INC: "++",
+    DEC: "--",
+    EQL: "==",
+    LSS: "<",
+    GTR: ">",
+    ASSIGN: "=",
+    NOT: "!",
+    NEQ: "!=",
+    LEQ: "<=",
+    GEQ: ">=",
+    DEFINE: ":=",
+    ELLIPSIS: "...",
+    LPAREN: "(",
+    LBRACK: "[",
+    LBRACE: "{",
+    COMMA: ",",
+    PERIOD: ".",
+    RPAREN: ")",
+    RBRACK: "]",
+    RBRACE: "}",
+    SEMICOLON: ";",
+    COLON: ":",
 };
 class Token {
     constructor() {
