@@ -238,7 +238,7 @@ class MapboxMark extends HTMLElement {
     }
 }
 customElements.define("mapbox-mark", MapboxMark);
-export class MapboxMaps extends HTMLElement {
+class MapboxMaps extends HTMLElement {
     static loadApiFile() {
         return new Promise((resolve, reject) => {
             const key = "AIzaSyBhPsH8OjHCypjgwt_Dl7A_W8wlBbyPink";
@@ -452,5 +452,6 @@ export class MapboxMaps extends HTMLElement {
 }
 _MapboxMaps_config = new WeakMap(), _MapboxMaps_map = new WeakMap();
 MapboxMaps.scriptLoaded = false;
+export { MapboxMaps };
 customElements.define("mapbox-maps", MapboxMaps);
 //# sourceMappingURL=MapBox.js.map

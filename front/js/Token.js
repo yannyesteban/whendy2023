@@ -1,113 +1,78 @@
-var tkType;
-(function (tkType) {
-    tkType[tkType["IDENT"] = 1] = "IDENT";
-    tkType[tkType["INT"] = 2] = "INT";
-    tkType[tkType["FLOAT"] = 3] = "FLOAT";
-    tkType[tkType["IMAG"] = 4] = "IMAG";
-    tkType[tkType["CHAR"] = 5] = "CHAR";
-    tkType[tkType["STRING"] = 6] = "STRING";
-    tkType[tkType["IF"] = 7] = "IF";
-    tkType[tkType["ELSE"] = 8] = "ELSE";
-    tkType[tkType["CASE"] = 9] = "CASE";
-    tkType[tkType["WHEN"] = 10] = "WHEN";
-    tkType[tkType["WHILE"] = 11] = "WHILE";
-    tkType[tkType["DEFAULT"] = 12] = "DEFAULT";
-    tkType[tkType["FOR"] = 13] = "FOR";
-    tkType[tkType["EACH"] = 14] = "EACH";
-    tkType[tkType["ADD"] = 15] = "ADD";
-    tkType[tkType["SUB"] = 16] = "SUB";
-    tkType[tkType["MUL"] = 17] = "MUL";
-    tkType[tkType["QUO"] = 18] = "QUO";
-    tkType[tkType["REM"] = 19] = "REM";
-    tkType[tkType["LPAREN"] = 20] = "LPAREN";
-    tkType[tkType["LBRACK"] = 21] = "LBRACK";
-    tkType[tkType["LBRACE"] = 22] = "LBRACE";
-    tkType[tkType["COMMA"] = 23] = "COMMA";
-    tkType[tkType["PERIOD"] = 24] = "PERIOD";
-    tkType[tkType["RPAREN"] = 25] = "RPAREN";
-    tkType[tkType["RBRACK"] = 26] = "RBRACK";
-    tkType[tkType["RBRACE"] = 27] = "RBRACE";
-    tkType[tkType["SEMICOLON"] = 28] = "SEMICOLON";
-    tkType[tkType["COLON"] = 29] = "COLON";
-    tkType[tkType["ADD_ASSIGN"] = 30] = "ADD_ASSIGN";
-    tkType[tkType["SUB_ASSIGN"] = 31] = "SUB_ASSIGN";
-    tkType[tkType["MUL_ASSIGN"] = 32] = "MUL_ASSIGN";
-    tkType[tkType["QUO_ASSIGN"] = 33] = "QUO_ASSIGN";
-    tkType[tkType["REM_ASSIGN"] = 34] = "REM_ASSIGN";
-    tkType[tkType["AND_ASSIGN"] = 35] = "AND_ASSIGN";
-    tkType[tkType["OR_ASSIGN"] = 36] = "OR_ASSIGN";
-    tkType[tkType["XOR_ASSIGN"] = 37] = "XOR_ASSIGN";
-    tkType[tkType["SHL_ASSIGN"] = 38] = "SHL_ASSIGN";
-    tkType[tkType["SHR_ASSIGN"] = 39] = "SHR_ASSIGN";
-    tkType[tkType["AND_NOT_ASSIGN"] = 40] = "AND_NOT_ASSIGN";
-    tkType[tkType["LAND"] = 41] = "LAND";
-    tkType[tkType["LOR"] = 42] = "LOR";
-    tkType[tkType["ARROW"] = 43] = "ARROW";
-    tkType[tkType["INC"] = 44] = "INC";
-    tkType[tkType["DEC"] = 45] = "DEC";
-    tkType[tkType["EQL"] = 46] = "EQL";
-    tkType[tkType["LSS"] = 47] = "LSS";
-    tkType[tkType["GTR"] = 48] = "GTR";
-    tkType[tkType["ASSIGN"] = 49] = "ASSIGN";
-    tkType[tkType["NOT"] = 50] = "NOT";
-    tkType[tkType["NEQ"] = 51] = "NEQ";
-    tkType[tkType["LEQ"] = 52] = "LEQ";
-    tkType[tkType["GEQ"] = 53] = "GEQ";
-    tkType[tkType["DEFINE"] = 54] = "DEFINE";
-    tkType[tkType["ELLIPSIS"] = 55] = "ELLIPSIS";
-})(tkType || (tkType = {}));
+var Token;
+(function (Token) {
+    Token[Token["IDENT"] = 1] = "IDENT";
+    Token[Token["EOF"] = 2] = "EOF";
+    Token[Token["COMMENT"] = 3] = "COMMENT";
+    Token[Token["INT"] = 4] = "INT";
+    Token[Token["FLOAT"] = 5] = "FLOAT";
+    //IMAG,   // 123.45i
+    //CHAR,   // 'a'
+    Token[Token["STRING"] = 6] = "STRING";
+    Token[Token["ADD"] = 7] = "ADD";
+    Token[Token["SUB"] = 8] = "SUB";
+    Token[Token["MUL"] = 9] = "MUL";
+    Token[Token["DIV"] = 10] = "DIV";
+    Token[Token["MOD"] = 11] = "MOD";
+    Token[Token["BIT_AND"] = 12] = "BIT_AND";
+    Token[Token["BIT_OR"] = 13] = "BIT_OR";
+    Token[Token["BIT_XOR"] = 14] = "BIT_XOR";
+    Token[Token["BIT_SHL"] = 15] = "BIT_SHL";
+    Token[Token["BIT_SHR"] = 16] = "BIT_SHR";
+    Token[Token["BIT_AND_NOT"] = 17] = "BIT_AND_NOT";
+    Token[Token["LPAREN"] = 18] = "LPAREN";
+    Token[Token["LBRACK"] = 19] = "LBRACK";
+    Token[Token["LBRACE"] = 20] = "LBRACE";
+    Token[Token["COMMA"] = 21] = "COMMA";
+    Token[Token["DOT"] = 22] = "DOT";
+    Token[Token["RPAREN"] = 23] = "RPAREN";
+    Token[Token["RBRACK"] = 24] = "RBRACK";
+    Token[Token["RBRACE"] = 25] = "RBRACE";
+    Token[Token["SEMICOLON"] = 26] = "SEMICOLON";
+    Token[Token["COLON"] = 27] = "COLON";
+    Token[Token["ADD_ASSIGN"] = 28] = "ADD_ASSIGN";
+    Token[Token["SUB_ASSIGN"] = 29] = "SUB_ASSIGN";
+    Token[Token["MUL_ASSIGN"] = 30] = "MUL_ASSIGN";
+    Token[Token["DIV_ASSIGN"] = 31] = "DIV_ASSIGN";
+    Token[Token["MOD_ASSIGN"] = 32] = "MOD_ASSIGN";
+    Token[Token["AND"] = 33] = "AND";
+    Token[Token["OR"] = 34] = "OR";
+    Token[Token["INCR"] = 35] = "INCR";
+    Token[Token["DECR"] = 36] = "DECR";
+    Token[Token["POW"] = 37] = "POW";
+    Token[Token["EQL"] = 38] = "EQL";
+    Token[Token["LSS"] = 39] = "LSS";
+    Token[Token["GTR"] = 40] = "GTR";
+    Token[Token["ASSIGN"] = 41] = "ASSIGN";
+    Token[Token["NOT"] = 42] = "NOT";
+    Token[Token["NEQ"] = 43] = "NEQ";
+    Token[Token["LEQ"] = 44] = "LEQ";
+    Token[Token["GEQ"] = 45] = "GEQ";
+    Token[Token["LET"] = 46] = "LET";
+    Token[Token["SYMBOL"] = 47] = "SYMBOL";
+    Token[Token["IF"] = 48] = "IF";
+    Token[Token["ELSE"] = 49] = "ELSE";
+    Token[Token["CASE"] = 50] = "CASE";
+    Token[Token["WHEN"] = 51] = "WHEN";
+    Token[Token["WHILE"] = 52] = "WHILE";
+    Token[Token["DEFAULT"] = 53] = "DEFAULT";
+    Token[Token["FOR"] = 54] = "FOR";
+    Token[Token["EACH"] = 55] = "EACH";
+})(Token || (Token = {}));
 const keywords = {
-    "if": tkType.IF,
-    "ELSE": tkType.ELSE,
-    "case": tkType.CASE,
-    "when": tkType.WHEN,
-    "while": tkType.WHILE,
-    "default": tkType.DEFAULT,
-    "for": tkType.FOR,
-    "each": tkType.EACH,
-    ADD_ASSIGN: "+=",
-    SUB_ASSIGN: "-=",
-    MUL_ASSIGN: "*=",
-    QUO_ASSIGN: "/=",
-    REM_ASSIGN: "%=",
-    AND_ASSIGN: "&=",
-    OR_ASSIGN: "|=",
-    XOR_ASSIGN: "^=",
-    SHL_ASSIGN: "<<=",
-    SHR_ASSIGN: ">>=",
-    AND_NOT_ASSIGN: "&^=",
-    LAND: "&&",
-    LOR: "||",
-    ARROW: "<-",
-    INC: "++",
-    DEC: "--",
-    EQL: "==",
-    LSS: "<",
-    GTR: ">",
-    ASSIGN: "=",
-    NOT: "!",
-    NEQ: "!=",
-    LEQ: "<=",
-    GEQ: ">=",
-    DEFINE: ":=",
-    ELLIPSIS: "...",
-    LPAREN: "(",
-    LBRACK: "[",
-    LBRACE: "{",
-    COMMA: ",",
-    PERIOD: ".",
-    RPAREN: ")",
-    RBRACK: "]",
-    RBRACE: "}",
-    SEMICOLON: ";",
-    COLON: ":",
+    if: Token.IF,
+    ELSE: Token.ELSE,
+    case: Token.CASE,
+    when: Token.WHEN,
+    while: Token.WHILE,
+    default: Token.DEFAULT,
+    for: Token.FOR,
+    each: Token.EACH,
 };
-class Token {
-    constructor() {
-    }
+class Keyword {
+    constructor() { }
     isKeyword(key) {
         var _a;
-        return (_a = keywords[key]) !== null && _a !== void 0 ? _a : false;
+        return (_a = keywords[key]) !== null && _a !== void 0 ? _a : Token.IDENT;
     }
 }
 console.log(keywords["f"]);

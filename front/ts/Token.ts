@@ -1,137 +1,97 @@
-enum tkType {
-	IDENT =1, // main
-	INT,    // 12345
-	FLOAT,  // 123.45
-	IMAG,   // 123.45i
-	CHAR,   // 'a'
+enum Token {
+	IDENT = 1, // main
+	EOF,
+	COMMENT,
+	INT, // 12345
+	FLOAT, // 123.45
+	//IMAG,   // 123.45i
+	//CHAR,   // 'a'
 	STRING, // "abc"
-    IF, // "abc"
-    ELSE, // "abc"
-    CASE, // "abc"
-    WHEN, // "abc"
-    WHILE, // "abc"
-    DEFAULT, // "abc"
-    FOR, // "abc"
-    EACH, 
-    
-    ADD, // +
+	
+	
+
+	ADD, // +
 	SUB, // -
 	MUL, // *
-	QUO, // /
-	REM, // %
-    
-    LPAREN, // (
-        LBRACK, // [
-        LBRACE, // {
-        COMMA,  // ,
-        PERIOD, // .
-    
+	DIV, // /
+	MOD, // %
 
+	BIT_AND,     // &
+	BIT_OR,      // |
+	BIT_XOR,     // ^
+	BIT_SHL,     // <<
+	BIT_SHR,     // >>
+	BIT_AND_NOT, // &^
 
-        RPAREN,    // )
-        RBRACK,    // ]
-        RBRACE,    // }
-        SEMICOLON, // ;
-        COLON,     // :
+	LPAREN, // (
+	LBRACK, // [
+	LBRACE, // {
+	COMMA, // ,
+	DOT, // .
 
-        ADD_ASSIGN, // +=
-        SUB_ASSIGN, // -=
-        MUL_ASSIGN, // *=
-        QUO_ASSIGN, // /=
-        REM_ASSIGN, // %=
-    
-        AND_ASSIGN,     // &=
-        OR_ASSIGN,      // |=
-        XOR_ASSIGN,     // ^=
-        SHL_ASSIGN,     // <<=
-        SHR_ASSIGN,     // >>=
-        AND_NOT_ASSIGN, // &^=
+	RPAREN, // )
+	RBRACK, // ]
+	RBRACE, // }
+	SEMICOLON, // ;
+	COLON, // :
 
+	ADD_ASSIGN, // +=
+	SUB_ASSIGN, // -=
+	MUL_ASSIGN, // *=
+	DIV_ASSIGN, // /=
+	MOD_ASSIGN, // %=
 
+	AND, // &&
+	OR, // ||
 
+	INCR, // ++
+	DECR, // --
+	POW, // **
 
-	LAND,  // &&
-	LOR,   // ||
-	ARROW, // <-
-	INC,   // ++
-	DEC,   // --
-
-	EQL,    // ==
-	LSS,    // <
-	GTR,    // >
+	EQL, // ==
+	LSS, // <
+	GTR, // >
 	ASSIGN, // =
-	NOT,    // !
+	NOT, // !
 
-	NEQ,      // !=
-	LEQ,      // <=
-	GEQ,      // >=
-	DEFINE,   // :=
-	ELLIPSIS, // ...
+	NEQ, // !=
+	LEQ, // <=
+	GEQ, // >=
+	LET, // :=
+
+	SYMBOL,
+
+
+	IF, // "if"
+	ELSE, // "else"
+	CASE, // "case"
+	WHEN, // "when"
+	WHILE, // "while"
+	DEFAULT, // "default"
+	FOR, // "for"
+	EACH, // "each"
 }
 
 const keywords = {
-    "if":tkType.IF,
-    "ELSE":tkType.ELSE,
-    "case":tkType.CASE,
-    "when":tkType.WHEN,
-    "while":tkType.WHILE,
-    "default":tkType.DEFAULT,
-    "for":tkType.FOR,
-    "each":tkType.EACH,
+	if: Token.IF,
+	ELSE: Token.ELSE,
+	case: Token.CASE,
+	when: Token.WHEN,
+	while: Token.WHILE,
+	default: Token.DEFAULT,
+	for: Token.FOR,
+	each: Token.EACH,
 
-    ADD_ASSIGN: "+=",
-	SUB_ASSIGN: "-=",
-	MUL_ASSIGN: "*=",
-	QUO_ASSIGN: "/=",
-	REM_ASSIGN: "%=",
+	
+};
 
-	AND_ASSIGN:     "&=",
-	OR_ASSIGN:      "|=",
-	XOR_ASSIGN:     "^=",
-	SHL_ASSIGN:     "<<=",
-	SHR_ASSIGN:     ">>=",
-	AND_NOT_ASSIGN: "&^=",
+class Keyword {
+	constructor() { }
 
-    LAND:  "&&",
-	LOR:   "||",
-	ARROW: "<-",
-	INC:   "++",
-	DEC:   "--",
-
-	EQL:    "==",
-	LSS:    "<",
-	GTR:    ">",
-	ASSIGN: "=",
-	NOT:    "!",
-
-	NEQ:      "!=",
-	LEQ:      "<=",
-	GEQ:      ">=",
-	DEFINE:   ":=",
-	ELLIPSIS: "...",
-
-	LPAREN: "(",
-	LBRACK: "[",
-	LBRACE: "{",
-	COMMA:  ",",
-	PERIOD: ".",
-
-	RPAREN:    ")",
-	RBRACK:    "]",
-	RBRACE:    "}",
-	SEMICOLON: ";",
-	COLON:     ":",
+	isKeyword(key) {
+		return keywords[key] ?? Token.IDENT;
+	}
+	
 }
 
-class Token{
-
-    constructor(){
-
-    }
-
-    isKeyword(key){
-        return keywords[key] ?? false;
-    }
-}
-
-console.log(keywords["f"])
+console.log(keywords["f"]);

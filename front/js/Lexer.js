@@ -1,16 +1,33 @@
-var token = new Token();
+var keyword = new Keyword();
 class Lexer {
     constructor(input) {
         this.input = "";
         this.pos = null;
+        this.rd = null;
         this.eof = false;
         this.ch = "";
         this.input = input;
         this.pos = 0;
+        this.rd = 0;
         this.ch = " ";
         this.eof = false;
         this.next();
         console.log(input);
+    }
+    evalOp(ch, tokenDefault, tokenAssign, tokenX2, tokenX3) {
+        if (this.ch == "=") {
+            this.next();
+            return tokenAssign;
+        }
+        if (tokenX2 && this.ch == ch) {
+            this.next();
+            if (tokenX3 && this.ch == ch) {
+                this.next();
+                return tokenX3;
+            }
+            return tokenX2;
+        }
+        return tokenDefault;
     }
     skipWhitespace() {
         while (this.ch == ' ' || this.ch == '\t' || this.ch == '\n' || this.ch == '\r') {
@@ -36,7 +53,7 @@ class Lexer {
     }
     scanNumber() {
         let offs = this.pos;
-        let tok = tkType.INT;
+        let tok = Token.INT;
         let base = 10; // number base
         let prefix = "0"; // one of 0 (decimal), '0' (0-octal), 'x', 'o', or 'b'
         //digsep = 0       // bit 0: digit present, bit 1: '_' present
@@ -44,7 +61,7 @@ class Lexer {
         let lit = "c";
         // integer part
         if (this.ch != '.') {
-            tok = tkType.INT;
+            tok = Token.INT;
             if (this.ch == '0') {
                 this.next();
                 switch (this.ch.toLowerCase()) {
@@ -70,7 +87,7 @@ class Lexer {
         }
         // fractional part
         if (this.ch == '.') {
-            tok = tkType.FLOAT;
+            tok = Token.FLOAT;
             if (prefix == 'o' || prefix == 'b') {
                 //s.error(s.offset, "invalid radix point in "+litname(prefix))
             }
@@ -94,7 +111,7 @@ class Lexer {
             }
             */
             this.next();
-            tok = tkType.FLOAT;
+            tok = Token.FLOAT;
             if (this.ch == '+' || this.ch == '-') {
                 this.next();
             }
@@ -126,7 +143,7 @@ class Lexer {
             }
         }
         */
-        lit = this.input.substring(offs - 1, this.pos);
+        lit = this.input.substring(offs, this.pos);
         console.log("<>", offs, this.pos, " = ", lit);
         //return lit
         return { lit, tok };
@@ -147,17 +164,22 @@ class Lexer {
     }
     scan() {
         let ch = null;
-        let lit = "";
+        let lit = "*** ERROR ***";
         let tok = null;
+        let offs = 0;
         while (!this.eof) {
             this.skipWhitespace();
             ch = this.ch;
+            offs = this.pos;
             console.log(this.ch);
             if (isLetter(ch) || ch == "_") {
                 lit = this.scanIdentifier();
                 console.log(".....", lit);
                 if (lit.length > 1) {
-                    tok = token.isKeyword(lit);
+                    tok = keyword.isKeyword(lit);
+                }
+                else {
+                    tok = Token.IDENT;
                 }
                 break;
             }
@@ -171,33 +193,73 @@ class Lexer {
             else {
                 this.next();
                 switch (ch) {
+                    case ":":
+                        tok = this.evalOp(ch, Token.COLON, Token.LET, null, null);
+                        lit = this.input.substring(offs, this.pos);
+                        break;
+                    case ".":
+                        tok = Token.DOT;
+                        lit = ".";
+                        break;
+                    case "(":
+                        tok = Token.LPAREN;
+                        lit = "(";
+                        break;
+                    case ")":
+                        tok = Token.RPAREN;
+                        lit = ")";
+                        break;
+                    case "[":
+                        tok = Token.LBRACK;
+                        lit = "[";
+                        break;
+                    case "]":
+                        tok = Token.RBRACK;
+                        lit = "]";
+                        break;
+                    case "{":
+                        tok = Token.LBRACE;
+                        lit = "{";
+                        break;
+                    case "}":
+                        tok = Token.RBRACE;
+                        lit = "}";
+                        break;
                     case ",":
-                        tok = tkType.COMMA;
+                        tok = Token.COMMA;
                         lit = ",";
                         break;
                     case ";":
-                        tok = tkType.SEMICOLON;
+                        tok = Token.SEMICOLON;
                         lit = ";";
                         break;
                     case "+":
-                        if (this.ch == "=") {
-                            tok = tkType.AND_ASSIGN;
-                            lit = "+=";
-                            this.next();
-                            break;
-                        }
-                        if (this.ch == ch) {
-                            tok = tkType.INC;
-                            lit = "++";
-                            this.next();
-                            break;
-                        }
-                        tok = tkType.ADD;
-                        lit = "+";
+                        tok = this.evalOp(ch, Token.ADD, Token.ADD_ASSIGN, Token.INCR, null);
+                        lit = this.input.substring(offs, this.pos);
+                        break;
+                    case "-":
+                        tok = this.evalOp(ch, Token.SUB, Token.SUB_ASSIGN, Token.DECR, null);
+                        lit = this.input.substring(offs, this.pos);
+                        break;
+                    case "*":
+                        tok = this.evalOp(ch, Token.MUL, Token.MUL_ASSIGN, Token.POW, null);
+                        lit = this.input.substring(offs, this.pos);
+                        break;
+                    case "/":
+                        tok = this.evalOp(ch, Token.DIV, Token.DIV_ASSIGN, null, null);
+                        lit = this.input.substring(offs, this.pos);
+                        break;
+                    case "%":
+                        tok = this.evalOp(ch, Token.MOD, Token.MOD_ASSIGN, null, null);
+                        lit = this.input.substring(offs, this.pos);
                         break;
                     case "=":
-                        tok = tkType.ASSIGN;
-                        lit = "=";
+                        tok = this.evalOp(ch, Token.ASSIGN, Token.EQL, null, null);
+                        lit = this.input.substring(offs, this.pos);
+                        break;
+                    case "!":
+                        tok = this.evalOp(ch, Token.NOT, Token.NEQ, null, null);
+                        lit = this.input.substring(offs, this.pos);
                         break;
                 }
             }
@@ -211,18 +273,20 @@ class Lexer {
         };
     }
     next() {
-        if (this.pos < this.input.length) {
+        if (this.rd < this.input.length) {
+            this.pos = this.rd;
             this.ch = this.input[this.pos];
-            this.pos++;
+            this.rd++;
         }
         else {
+            this.pos = this.input.length;
             this.eof = true;
             this.ch = "\0";
         }
     }
     peek() {
-        if (this.pos + 1 < this.input.length) {
-            return this.input[this.pos + 1];
+        if (this.pos < this.input.length) {
+            return this.input[this.pos];
         }
         return null;
     }
@@ -235,9 +299,9 @@ class Lexer {
     }
 }
 let source = `while if for while  987.368  5e+3 -24 0xaf01 0b2 if yanny, esteban, hello; wait; test 4==5 6=3 2+2 k+=8`;
-source = `3 5`;
+source = `if(a!=1){g:=!s}{e=6%3}`;
 let lexer = new Lexer(source);
-console.log(lexer.getTokens());
+console.log(source, "\n", lexer.getTokens());
 `
 if(a>1){"445"}else{"aaa"};a=45;case(a){when(1){ 456}when(2){100}default{3001}}
 

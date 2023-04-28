@@ -1,15 +1,17 @@
-var token = new Token();
+var keyword = new Keyword();
 
 class Lexer {
 
     public input: string = "";
     public pos: number = null;
+    public rd: number = null;
     public eof: boolean = false;
     public ch: string = "";
 
     constructor(input: string) {
         this.input = input;
         this.pos = 0;
+        this.rd = 0;
         this.ch = " ";
         this.eof = false;
 
@@ -17,29 +19,47 @@ class Lexer {
         console.log(input);
     }
 
+    evalOp(ch, tokenDefault, tokenAssign, tokenX2, tokenX3) {
+        if (this.ch == "=") {
+            this.next()
+            return tokenAssign
+        }
+        if (tokenX2 && this.ch == ch) {
+            this.next()
+            if (tokenX3 && this.ch == ch) {
+                this.next()
+                return tokenX3
+            }
+            return tokenX2
+        }
+        return tokenDefault
+    }
+
+
+
     skipWhitespace() {
-        while(this.ch == ' ' || this.ch == '\t' || this.ch == '\n' || this.ch == '\r') {
+        while (this.ch == ' ' || this.ch == '\t' || this.ch == '\n' || this.ch == '\r') {
             console.log("[][][]")
             this.next();
 
         }
     }
 
-    scanIdentifier(){
+    scanIdentifier() {
         let init = this.pos;
         let end = init;
         let lit = "";
-        while(!this.eof){
+        while (!this.eof) {
             let ch = this.ch;
 
-            if(isAlphaNumeric(ch)){
-                
+            if (isAlphaNumeric(ch)) {
+
                 end++;
                 lit += this.ch
-                
+
                 this.next();
                 continue;
-                
+
             }
 
             break;
@@ -48,52 +68,52 @@ class Lexer {
         return lit;
     }
 
-    scanNumber  () {
-        let offs = this.pos
-        let tok = tkType.INT
-    
-        let base = 10        // number base
-        let prefix = "0" // one of 0 (decimal), '0' (0-octal), 'x', 'o', or 'b'
+    scanNumber() {
+        let offs = this.pos;
+        let tok = Token.INT;
+
+        let base = 10;        // number base
+        let prefix = "0"; // one of 0 (decimal), '0' (0-octal), 'x', 'o', or 'b'
         //digsep = 0       // bit 0: digit present, bit 1: '_' present
         //invalid = -1     // index of invalid digit in literal, or < 0
-    
+
         let lit = "c"
         // integer part
         if (this.ch != '.') {
-            tok = tkType.INT
+            tok = Token.INT
             if (this.ch == '0') {
                 this.next();
                 switch (this.ch.toLowerCase()) {
-                case 'x':
-                    this.next();
-                    [base, prefix] = [16, 'x'];
-                    break;
-                case 'o':
-                    this.next();
-                    ([base, prefix] = [8, 'o']);
-                    break;
-                case 'b':
-                    this.next();
-                    [base, prefix] = [2, 'b']
-                    break;
-                default:
-                    [base, prefix] = [8, '0']
+                    case 'x':
+                        this.next();
+                        [base, prefix] = [16, 'x'];
+                        break;
+                    case 'o':
+                        this.next();
+                        ([base, prefix] = [8, 'o']);
+                        break;
+                    case 'b':
+                        this.next();
+                        [base, prefix] = [2, 'b']
+                        break;
+                    default:
+                        [base, prefix] = [8, '0']
                     //digsep = 1 // leading 0
                 }
             }
             //digsep |= 
             this.digits(base)
         }
-    
+
         // fractional part
         if (this.ch == '.') {
-            tok = tkType.FLOAT
-            if (prefix == 'o' || prefix == 'b' ){
+            tok = Token.FLOAT
+            if (prefix == 'o' || prefix == 'b') {
                 //s.error(s.offset, "invalid radix point in "+litname(prefix))
             }
             this.next()
             this.digits(base)
-            
+
         }
         /*
         if digsep&1 == 0 {
@@ -112,7 +132,7 @@ class Lexer {
             }
             */
             this.next()
-            tok = tkType.FLOAT
+            tok = Token.FLOAT
             if (this.ch == '+' || this.ch == '-') {
                 this.next()
             }
@@ -122,7 +142,7 @@ class Lexer {
                 s.error(s.offset, "exponent has no digits")
             }
             */
-        } 
+        }
         /*
         else if prefix == 'x' && tok == token.FLOAT {
             s.error(s.offset, "hexadecimal mantissa requires a 'p' exponent")
@@ -144,105 +164,149 @@ class Lexer {
             }
         }
         */
-       lit = this.input.substring(offs-1, this.pos)
-       console.log("<>",offs, this.pos," = ",lit)
+        lit = this.input.substring(offs, this.pos)
+        console.log("<>", offs, this.pos, " = ", lit)
         //return lit
-        return {lit, tok}
+        return { lit, tok }
     }
 
-    digits(base: number)  {
+    digits(base: number) {
         if (base <= 10) {
             //max := rune('0' + base)
-            while(isDecimal(this.ch)) {
-                
+            while (isDecimal(this.ch)) {
+
                 this.next()
             }
         } else {
-            while(isHex(this.ch)) {
-                
+            while (isHex(this.ch)) {
+
                 this.next()
             }
         }
         return
     }
 
-    
+
 
     scan() {
-        
+
         let ch = null;
-        let lit = "";
-        
-        let tok:number = null;
-        
+        let lit = "*** ERROR ***";
+
+        let tok: number = null;
+        let offs = 0;
         while (!this.eof) {
             this.skipWhitespace();
+
             ch = this.ch;
+            offs = this.pos;
             console.log(this.ch)
 
-            
-            if(isLetter(ch) || ch=="_"){
+
+            if (isLetter(ch) || ch == "_") {
                 lit = this.scanIdentifier();
                 console.log(".....", lit)
-                if(lit.length>1){
-                    tok = token.isKeyword(lit);
+                if (lit.length > 1) {
+                    tok = keyword.isKeyword(lit);
+                } else {
+                    tok = Token.IDENT;
                 }
                 break;
-                
-            }else if(isDecimal(ch) || ch == '.' && isDecimal(this.peek())){
+
+            } else if (isDecimal(ch) || ch == '.' && isDecimal(this.peek())) {
 
 
-                ( {lit, tok} = this.scanNumber());
+                ({ lit, tok } = this.scanNumber());
 
                 //console.log("this.scanNumber()", this.scanNumber())
                 //{lit, tok} = this.scanNumber()
                 console.log(lit, tok)
                 break;
-            }else{
+            } else {
 
                 this.next();
-                switch(ch){
+                switch (ch) {
+                    case ":":
+                        tok = this.evalOp(ch, Token.COLON, Token.LET, null, null);
+                        lit = this.input.substring(offs, this.pos)
+                        break;
+                    case ".":
+                        tok = Token.DOT;
+                        lit = ".";
+                        break;
+                    case "(":
+                        tok = Token.LPAREN;
+                        lit = "(";
+                        break;
+                    case ")":
+                        tok = Token.RPAREN;
+                        lit = ")";
+                        break;
+                    case "[":
+                        tok = Token.LBRACK;
+                        lit = "[";
+                        break;
+
+                    case "]":
+                        tok = Token.RBRACK;
+                        lit = "]";
+                        break;
+                    case "{":
+                        tok = Token.LBRACE;
+                        lit = "{";
+                        break;
+                    case "}":
+                        tok = Token.RBRACE;
+                        lit = "}";
+                        break;
                     case ",":
-                        tok = tkType.COMMA;
+                        tok = Token.COMMA;
                         lit = ","
                         break;
                     case ";":
-                        tok = tkType.SEMICOLON;
+                        tok = Token.SEMICOLON;
                         lit = ";"
-                        break;   
+                        break;
                     case "+":
-                        if(this.ch == "="){
-                            tok = tkType.AND_ASSIGN;
-                            lit = "+="
-                            this.next();
-                            break;
-
-                        }
-                        if(this.ch == ch){
-                            tok = tkType.INC;
-                            lit = "++"
-                            this.next();
-                            break;
-
-                        }
-
-                        tok = tkType.ADD;
-                        
-                    
-                        lit = "+";
-                        break; 
+                        tok = this.evalOp(ch, Token.ADD, Token.ADD_ASSIGN, Token.INCR, null);
+                        lit = this.input.substring(offs, this.pos);
+                        break;
+                    case "-":
+                        tok = this.evalOp(ch, Token.SUB, Token.SUB_ASSIGN, Token.DECR, null);
+                        lit = this.input.substring(offs, this.pos);
+                        break;
+                    case "*":
+                        tok = this.evalOp(ch, Token.MUL, Token.MUL_ASSIGN, Token.POW, null);
+                        lit = this.input.substring(offs, this.pos);
+                        break;
+                    case "/":
+                        tok = this.evalOp(ch, Token.DIV, Token.DIV_ASSIGN, null, null);
+                        lit = this.input.substring(offs, this.pos);
+                        break;
+                    case "%":
+                        tok = this.evalOp(ch, Token.MOD, Token.MOD_ASSIGN, null, null);
+                        lit = this.input.substring(offs, this.pos);
+                        break;                        
                     case "=":
-                        tok = tkType.ASSIGN;
-                        lit = "=";   
-                        break;                  
+                        
+                        tok = this.evalOp(ch, Token.ASSIGN, Token.EQL, null, null);
+                        lit = this.input.substring(offs, this.pos);
+                        
+                        break;
+                    case "!":
+                        
+                        tok = this.evalOp(ch, Token.NOT, Token.NEQ, null, null);
+                        lit = this.input.substring(offs, this.pos);
+                        
+                        break;                        
 
                 }
-                
+
 
 
             }
 
-            
+
             break;
         }
         console.log(lit, tok)
@@ -257,28 +321,29 @@ class Lexer {
 
     next() {
 
-        if (this.pos < this.input.length) {
-            
+        if (this.rd < this.input.length) {
+            this.pos = this.rd;
             this.ch = this.input[this.pos];
-            this.pos++;
+            this.rd++;
         } else {
+            this.pos = this.input.length;
             this.eof = true;
             this.ch = "\0";
         }
 
     }
 
-    peek(){
-        if (this.pos+1 < this.input.length) {
-            return this.input[this.pos+1];
+    peek() {
+        if (this.pos < this.input.length) {
+            return this.input[this.pos];
         }
         return null;
     }
 
-    getTokens(){
+    getTokens() {
         let tokens = [];
         while (!this.eof) {
-            
+
             tokens.push(this.scan())
 
         }
@@ -289,10 +354,10 @@ class Lexer {
 
 let source = `while if for while  987.368  5e+3 -24 0xaf01 0b2 if yanny, esteban, hello; wait; test 4==5 6=3 2+2 k+=8`;
 
-source = `3 5`;
+source = `if(a!=1){g:=!s}{e=6%3}`;
 let lexer = new Lexer(source);
 
-console.log(lexer.getTokens());
+console.log(source, "\n", lexer.getTokens());
 
 `
 if(a>1){"445"}else{"aaa"};a=45;case(a){when(1){ 456}when(2){100}default{3001}}
