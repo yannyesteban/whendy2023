@@ -1,5 +1,5 @@
 var keyword = new Keyword();
-
+var unicode = { MaxRune: 65536 };
 class Lexer {
 
     public input: string = "";
@@ -19,6 +19,10 @@ class Lexer {
         console.log(input);
     }
 
+    error(offs: number, msg: string) {
+
+    }
+
     evalOp(ch, tokenDefault, tokenAssign, tokenX2, tokenX3) {
         if (this.ch == "=") {
             this.next()
@@ -35,14 +39,128 @@ class Lexer {
         return tokenDefault
     }
 
+    doubleOp(ch, tokenDefault, tokenX2) {
+
+        if (tokenX2 && this.ch == ch) {
+            this.next()
+            return tokenX2
+        }
+        return tokenDefault
+    }
+
 
 
     skipWhitespace() {
         while (this.ch == ' ' || this.ch == '\t' || this.ch == '\n' || this.ch == '\r') {
-            console.log("[][][]")
             this.next();
-
         }
+    }
+
+    digitVal(ch: string): number {
+        if ("0" <= ch && ch <= "9") {
+            return (ch.charCodeAt(0) - "0".charCodeAt(0));
+        }
+        if ("a" <= ch.toLowerCase() && ch.toLowerCase() <= "f") {
+            return (ch.charCodeAt(0) - "a".charCodeAt(0) + 10);
+        }
+
+        return 16;
+    }
+
+    scanEscape(quote): boolean {
+        const offs = this.pos;
+
+        let n: number;
+        let base: number, max:number;
+        switch (this.ch) {
+            case "a":
+            case "b":
+            case "f":
+            case "n":
+            case "r":
+            case "t":
+            case "v":
+            case "\\":
+            case quote:
+                this.next();
+                return true;
+
+            case "0":
+            case "1":
+            case "2":
+            case "3":
+            case "4":
+            case "5":
+            case "6":
+            case "7":
+
+                [n, base, max] = [3, 8, 255];
+                break;
+            case 'x':
+                this.next();
+                [n, base, max] = [2, 16, 255];
+                break;
+            case 'u':
+                this.next();
+                [n, base, max] = [4, 16, unicode.MaxRune];
+                break;
+            case 'U':
+                this.next();
+                [n, base, max] = [8, 16, unicode.MaxRune];
+                break;
+            default:
+                let msg = "unknown escape sequence"
+                if (this.ch < "\0") {
+                    msg = "escape sequence not terminated"
+                }
+                this.error(offs, msg)
+                return false
+        }
+
+        let x:number;
+        while (n > 0) {
+            let d = this.digitVal(this.ch);
+            if (d >= base) {
+                let msg = "illegal character %#U in escape sequence" + this.ch;
+                if (this.ch < "\n") {
+                    msg = "escape sequence not terminated"
+                }
+                this.error(this.pos, msg);
+                return false
+            }
+            x = x * base + d;
+            this.next();
+            n--;
+        }
+
+        if (x > max || 0xD800 <= x && x < 0xE000) {
+            this.error(offs, "escape sequence is invalid Unicode code point");
+            return false;
+        }
+
+        return true;
+    }
+
+    scanString(quote): string {
+        // '"' opening already consumed
+        const offs = this.pos - 1;
+
+        while (true) {
+            let ch = this.ch
+            if (ch == "\n" || ch < "\0") {
+                this.error(offs, "string literal not terminated")
+                break
+            }
+            this.next()
+            if (ch == quote) {
+                break
+            }
+            if (ch == '\\') {
+                this.scanEscape(quote)
+            }
+        }
+
+        return this.input.substring(offs, this.pos);
     }
 
     scanIdentifier() {
@@ -226,6 +344,11 @@ class Lexer {
 
                 this.next();
                 switch (ch) {
+                    case "\"":
+                    case "'":                        
+                        tok = Token.STRING;
+                        lit = this.scanString(ch);
+                        break;
                     case ":":
                         tok = this.evalOp(ch, Token.COLON, Token.LET, null, null);
                         lit = this.input.substring(offs, this.pos)
@@ -286,24 +409,45 @@ class Lexer {
                     case "%":
                         tok = this.evalOp(ch, Token.MOD, Token.MOD_ASSIGN, null, null);
                         lit = this.input.substring(offs, this.pos);
-                        break;                        
+                        break;
                     case "=":
-                        
+
                         tok = this.evalOp(ch, Token.ASSIGN, Token.EQL, null, null);
                         lit = this.input.substring(offs, this.pos);
-                        
+
                         break;
                     case "!":
-                        
+
                         tok = this.evalOp(ch, Token.NOT, Token.NEQ, null, null);
                         lit = this.input.substring(offs, this.pos);
-                        
-                        break;                        
+
+                        break;
+                    case "&":
+
+                        tok = this.doubleOp(ch, Token.BIT_AND, Token.AND);
+                        lit = this.input.substring(offs, this.pos);
+
+                        break;
+                    case "|":
+
+                        tok = this.doubleOp(ch, Token.BIT_OR, Token.OR);
+                        lit = this.input.substring(offs, this.pos);
+
+                        break;
+                    case "<":
+
+                        tok = this.evalOp(ch, Token.LSS, Token.LEQ, null, null);
+                        lit = this.input.substring(offs, this.pos);
+
+                        break;
+                    case ">":
+
+                        tok = this.evalOp(ch, Token.GTR, Token.GEQ, null, null);
+                        lit = this.input.substring(offs, this.pos);
+
+                        break;
 
                 }
-
-
-
             }
 
 
@@ -352,9 +496,11 @@ class Lexer {
 
 }
 
+console.log(Token);
+
 let source = `while if for while  987.368  5e+3 -24 0xaf01 0b2 if yanny, esteban, hello; wait; test 4==5 6=3 2+2 k+=8`;
 
-source = `if(a!=1){g:=!s}{e=6%3}`;
+source = '"yanny\\n esteban"';
 let lexer = new Lexer(source);
 
 console.log(source, "\n", lexer.getTokens());
